@@ -1,0 +1,6 @@
+.sideBar{
+    border-right: 2px solid rgb(143, 140, 127) ;
+    /* background-color: aqua; */
+    border-bottom-right-radius: 5px;
+    box-shadow: 2;
+}
