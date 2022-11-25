@@ -52,6 +52,21 @@ const SideBar = () => {
 
       <div className="mb-3">
         <NavLink
+          to={"/responses"}
+          className={({ isActive }) =>
+            isActive
+              ? classes.active + " border rounded px-1 px-xl-4 py-2"
+              : classes.inactive + " px-1 px-xl-4  py-2"
+          }
+        >
+          <span className="fs-5 me-3">
+            <i className="fa-solid fa-users"></i>
+          </span>
+          <span>Responses</span>
+        </NavLink>
+      </div>
+      <div className="mb-3">
+        <NavLink
           to={"/employees"}
           className={({ isActive }) =>
             isActive

@@ -5,6 +5,7 @@ import Dashboard from '../pages/Dashboard'
 import Questions from '../pages/Questions'
 import Employee from '../pages/employee/Employee'
 import SurveyList from '../pages/SurveyList'
+import Response from '../pages/Response'
 function Rouuter() {
   return (
 <BrowserRouter>
@@ -15,6 +16,7 @@ function Rouuter() {
      <Route path='questions'  element={<Questions/>}></Route>
      <Route path='surveys'  element={<SurveyList/>}></Route>
      <Route path='employees'  element={<Employee/>}></Route>
+     <Route path='responses'  element={<Response/>}></Route>
      </Route>
   </Routes>
   </BrowserRouter>

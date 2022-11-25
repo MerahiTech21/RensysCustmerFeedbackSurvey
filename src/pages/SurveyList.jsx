@@ -49,6 +49,8 @@ export default function SurveyList() {
                   <Button
                     variant="none"
                     className={`${classes.dropdownItem} border-bottom w-100 rounded-0 text-start ps-3`}
+                    onClick={()=>navigate('/responses')}
+
                   >
                     Responses
                   </Button>

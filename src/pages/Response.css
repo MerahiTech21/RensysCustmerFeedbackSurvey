@@ -1,0 +1,40 @@
+
+.nav-tabs .nav-item .nav-link {
+    background-color: 'white';
+    color: 'white';
+    text-decoration: none;
+    border: 0;
+
+  }
+  .nav-tabs .nav-item  {
+    background-color: 'green';
+    color: 'white';
+  
+  }
+
+.nav-tabs .nav-item .nav-link.active {
+  color: hsl(180, 4%, 5%);
+  /* border: 6px solid #0c4c8b; */
+  /* border: 0; */
+  border-bottom: 3px solid #0c4c8b;
+
+}
+.nav-tabs .nav-item .nav-link:hover {
+    /* border: 6px solid #0c4c8b; */
+    border: 0;
+    border-bottom: 3px solid #0c4c8b;
+  
+  }
+
+.tab-content {
+  /* border: 6px solid #0c4c8b; */
+  border-top: transparent;
+  padding: 15px;
+}
+
+.tab-content .tab-pane {
+  background-color: #FFF;
+  /* color: #0080FF; */
+  min-height: 200px;
+  height: auto;
+}

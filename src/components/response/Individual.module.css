@@ -1,0 +1,11 @@
+.printButton{
+    background-color: rgb(228, 217, 217) !important;
+    box-shadow: none !important;
+
+    
+}
+.deleteButton{
+    background-color: rgb(228, 217, 217) !important;
+    /* box-shadow: none !important; */
+    
+}
