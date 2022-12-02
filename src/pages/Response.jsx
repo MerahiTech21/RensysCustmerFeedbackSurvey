@@ -6,12 +6,13 @@ import Individual from '../components/response/Individual';
 import Questions from '../components/response/Questions';
 import Summary from '../components/response/Summary';
 import './Response.css'
+
 function Response() {
   const [key, setKey] = useState('summary');
 
   return (
     <div className='mt-0'>
-      <div className='m-0'><h3 className='m-0'>2 Responses</h3></div>
+      <div className='m-0'><h6 className='m-0'>2 Responses</h6></div>
     <div className='d-flex flex-column justify-content-between align-items-end mb-2 me-5 mt-0' >
       <div>
     <div  >Survey Name : Customer Feedback Survey</div>

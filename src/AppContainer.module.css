@@ -1,6 +1,8 @@
 .sideBar{
     border-right: 2px solid rgb(143, 140, 127) ;
-    /* background-color: aqua; */
-    border-bottom-right-radius: 5px;
-    box-shadow: 2;
+    background-color: rgb(205, 212, 212);
+    border-bottom-right-radius: 1px;
+    box-shadow: 1px;
+    min-height: 100vh;
+    min-width: 16% !important ;
 }

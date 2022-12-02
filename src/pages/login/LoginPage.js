@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 import {buttonAction} from '../../store/slices/ButtonSpinerSlice'
 import { userAction } from '../../store/slices/UserSlice';
 import apiClient from '../../url/index';
-import fileApiClient from '../../url/fileApiClient';
 import classes from './Login.module.css'
 
 
@@ -56,7 +55,6 @@ const LoginPage = () =>{
           }
         const saveUserData = (data) =>{
             apiClient.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
-            fileApiClient.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
               localStorage.setItem("tokenc", data.token);
               dispatch(userAction.setToken(data.token))
               dispatch(userAction.setIsAuthenticated(true))

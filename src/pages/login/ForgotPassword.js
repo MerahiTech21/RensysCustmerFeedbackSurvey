@@ -1,36 +1,38 @@
 import {useState} from 'react'
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import classes from './Login.module.css'
 const ForgotPassword = () =>{
- const [cridentials, setCridentials] = useState({email:'',password:''})
- const [errors,setErrors] = useState({email:'',password:''})
-     const changeHandler = (e) =>{
-        const {name,value} = e.target
-        setCridentials(prevValues=>{
-            return {...prevValues,[name]:value}
-        })
+ const [email, setEmail] = useState('')
+ const [error,setError] = useState('')
+
+ const navigate=useNavigate()
+    
+ const emailHandler = (e) =>{
+  console.log('erro',error)
+        setEmail(e.target.value)
      }
-     const validate = (values) =>{
+     const validate = (value) =>{
         const regexExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
-      const errorValues ={}
-      if(!values.email){
-        errorValues.email = 'email is required'
+      var errorValues =''
+      if(!value){
+        errorValues = 'Email is Required'
       }
-      if(!regexExp.test(values.email)){
-        errorValues.email = 'invalid email address'
+      else if(!regexExp.test(value)){
+        errorValues = 'Invalid Email Address'
       }
-      if(!values.password){
-        errorValues.password ='password is required'
-      }
-      if(values.length > 15){
-        errorValues.password = 'password must not be greater than 15 characters'
-      }
+
       return errorValues
      }
-    const loginHandler =() =>{
-        setErrors(validate(cridentials))
+    const forgotHandler =(e) =>{
+         e.preventDefault()
+       const err=validate(email)
+        setError(err)
+       if(!err){
+              navigate('/verify-otp')
+
+       }
     }
     return <div className={`${classes.wraper} p-5`}>
 <Form>
@@ -40,22 +42,14 @@ const ForgotPassword = () =>{
   type="email" 
   placeholder="name@example.com"
   name='email'
-  className={errors.email?classes.errorBorder:''}
-  onChange={changeHandler}
+  value={email}
+  className={error ? classes.errorBorder:''}
+  onChange={emailHandler}
    />
-   <span className={classes.errorText}>{errors.email}</span> 
+   <span className={classes.errorText}>{error}</span> 
 </Form.Group>
-<Form.Group className="mb-4" controlId="password">
-  <Form.Label className='fw-bold'>Password</Form.Label>
-  <Form.Control 
-  type="password"
-  name='password'
-  className={errors.password?classes.errorBorder:''}
-  onChange={changeHandler}
-   />
-   <span className={classes.errorText}>{errors.password}</span> 
-</Form.Group>
-<Button className={`${classes.btn} w-100`} variant='none' onClick={loginHandler}>Login</Button>
+
+<Button className={`${classes.btn} w-100 mb-1`} variant='none' onClick={forgotHandler}>Send Email</Button>
 </Form>
 <div className='d-flex justify-content-end mt-4'>
 <Link to={'/login'}>Login</Link>

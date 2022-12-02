@@ -2,8 +2,11 @@
     width: 30%;
     margin: auto;
     margin-top: 5%;
-    border: 1px solid gray;
+    border-radius: 1em;
+    /* border: 1px solid gray; */
+    background-color: rgb(205, 212, 212);
 }
+
 .yellowTxt{
     color: #ff7f00!important;
 }
@@ -11,11 +14,13 @@
     color: #84bd3a;
 }
 .btn{
-    background-color: #ff7f00!important;
+    background-color: #1a1612!important;
     color: #fff!important;
 }
 .btn:hover{
-    background-color: #ff3300!important;
+    background-color: rgb(205, 212, 212);
+
+    /* background-color: #ff3300!important; */
 }
 .errorBorder{
     border-color: red!important;

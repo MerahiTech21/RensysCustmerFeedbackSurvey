@@ -4,7 +4,7 @@ const Spiner = () =>{
     return (
         <div className={classes.spinerContainer}>
         <div className='d-flex justify-content-center mt-5'>
-        <Spinner animation="border" variant="black" />
+        <Spinner animation="border" variant="info" />
         </div>
        
         </div>

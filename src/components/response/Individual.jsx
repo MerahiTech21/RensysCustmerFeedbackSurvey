@@ -98,12 +98,22 @@ function Individual() {
           <div>
             <div className="mb-3">{current * 1 + 1 + ". " + question.question}</div>
             <div className="border m-3 p-3 ps-4 rounded-top rounded-bottom rounded-right rounded-left">
-              {question.options.map((opt)=>{
+              <Form>
+              {question.options.map((opt,index)=>{
                 return (
-                  <div></div>
+                  <div key={index}>
+                    <Form.Check
+                    
+                     type={question.questionType} 
+                     id={opt.id} 
+                     label={opt.title} 
+                    //  disabled
+                     checked={question.answer.some((ans)=> ans === opt.title)}/>
+                  </div>
                 )
               })}
-            </div>
+              </Form>
+            </div>  
           </div>
         );
       })}

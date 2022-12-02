@@ -1,5 +1,6 @@
 .active{
-    background-color: #062539;
+    /* background-color: #062539; */
+    background-color: #ffff;
     text-decoration: none;
     color: #FF7e00; 
     font-family: 'Mulish', sans-serif;
@@ -15,6 +16,11 @@
    font-weight: bold;
    font-size: large;
 }
-.sideBar{
-
-}
+.nav-item .nav-link:hover{
+  text-decoration: none !important;
+   
+  }
+  .navLink{
+    text-decoration: none;
+    border-radius: 50em;
+  }

@@ -1,13 +1,13 @@
 import {createSlice} from '@reduxjs/toolkit'
 
 const buttonSpiner = createSlice({
-    name:'isLoadingbuton',
+    name:'isLoadingButton',
     initialState:{isLoading:false},
     reducers:{
         setBtnSpiner:(state,action)=>{
            state.isLoading = action.payload
         },
-
+  
 
     }
 })

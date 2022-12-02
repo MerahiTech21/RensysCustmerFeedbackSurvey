@@ -1,13 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 export const questionSlice=createSlice({
-    name:'questions',
-    initialState:[],
+    name:'question',
+    initialState:{questions:[]},
     reducers:{
-        questionSaved:(action,payload)=>{
-
+        setQuestions:(state,action)=>{
+          state.questions=action.payload.questions
         },
-        questionDeleted:(action,payload)=>{
+        addQuestion:(state,action)=>{
+          state.questions.push(action.payload)
+        },
+        deletedQuestion:(state,action)=>{
+          const index=state.questions.findIndex((q)=>q.id*1 === action.payload*1)
+          state.questions.splice(index,1)
 
         }
     }

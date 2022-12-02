@@ -4,7 +4,7 @@ function Header() {
   return (
     <div className='headerNav d-flex justify-center'>
      
-      <h2><span className='headerLogoName1'>Rensys </span> <span className='headerLogoName2'> Engineering</span></h2>
+      <h5><span className='headerLogoName1'>Rensys </span> <span className='headerLogoName2'> Engineering</span></h5>
      
     </div>
   )

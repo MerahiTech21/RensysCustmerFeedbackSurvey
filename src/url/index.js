@@ -1,6 +1,6 @@
 import axios from "axios";
 let apiClient = axios.create({
-    baseURL: 'http://192.168.1.93:3000/',
+    baseURL: 'http://192.1.56.1:5000/',
     headers: {
 
          Accept: 'application/json',
@@ -11,4 +11,4 @@ let apiClient = axios.create({
     }
 })
 
-export default apiClient
+export default apiClient  
