@@ -1,127 +1,264 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import { PieChart } from "react-minimal-pie-chart";
 import PrintIcon from "@mui/icons-material/Print";
 import CircleIcon from "@mui/icons-material/Circle";
 import BarChart from "react-easy-bar-chart";
 import HorizontalBarChart from "./BarChart";
-import initialQuestionResponses from "../../sample-data/SampleData"
+import initialQuestionResponses from "../../sample-data/SampleData";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "../../url";
+import SampleBarChart from "./SampleBarChart";
+import VictorySampleChart from "./VictorySampleChart";
+import { VictoryAxis, VictoryBar, VictoryChart, VictoryTheme } from "victory";
+import { responseAction } from "../../store/slices/QuestionResponseSlice";
+import { useReactToPrint } from "react-to-print";
+// import classes from "./Question.module..css";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-const colors = ["#E38627", "#C13C37", "#6A2135"];
-function Summary() {
-  const [questionResponses, setQuestionResponses] = useState([]);
+const colors = [
+  "#E38627",
+  "#C13C37",
+  "#6A2135",
+  "#6A2134",
+  "#6A2136",
+  "#6A2138",
+];
+function Summary(props) {
+  // const [questionResponses, setQuestionResponses] = useState([]);
   const selectedSurvey = useSelector((state) => state.survey.selectedSurvey);
+  const questionResponses = useSelector((state) => state.response.responses);
+  // const questionResponses = useSelector((state) => state.response.responses);
 
+  var barGraphData = [];
   const dispatch = useDispatch();
-  const navigate=useNavigate()
+  const navigate = useNavigate();
+  const params = useParams();
+  const surveyId = props.surveyId;
+  const componentRef = useRef();
 
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
-  const fetchQuestions = async () => {
-    try {
-       const response=await apiClient.get(`/api/responses/${selectedSurvey.id}`)
-      if (response.status === 200) {
-        setQuestionResponses(response.data);
-        console.log('fetched = ',response.data)
-        // dispatch(questionAction.setQuestions(initialQuestions));
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-    }
-  };
+  const handlePrint = useReactToPrint({
+    content: () => componentRef.current,
+  });
 
+  if (questionResponses.length == 0) {
+    return <div></div>;
+  }
   return (
-    <div className="d-flex flex-column">
-      <div className="align-self-end">
-        <Button variant="color-light">
-          <PrintIcon />
-        </Button>
-      </div>
-
-      {questionResponses.map((qResponse, index) => {
-        return (
-          <div
-            key={index}
-            className="mb-4 p-4 border rounded-bottom rounded-right rounded-left rounded-top bg-light"
+    <div className="d-flex flex-column mx-5">
+      <div className="d-flex justify-content-between mx-4 px-2">
+        <div className="">
+          <Button
+            variant="none"
+            className={"me-2 "}
+            onClick={() => navigate(-1)}
           >
-            <div>
-              <p className="fw-bold fs-6  text-capitalize ">{qResponse.text}</p>
-            </div>
-            <div className="ms-3">
-              <p>{qResponse.responses.length + " responses"}</p>
-            </div>
-            {qResponse.responses.length === 0 && (<di>No Answers For This Question Yet</di>)}
-            {qResponse.responses.length !== 0 && ( <div>
-
-            {qResponse.type === "short" && (
-              <div className="m-3">
-                {qResponse.responses.map((response) => {
-                  return <p className=" text-capitalize"> {response.response}</p>;
-                })}
-              </div>
-            )}
-
-            {qResponse.type === "checkbox" && (
-              <div className="m-3">
-
-                  {qResponse.responseChoices.map((response, index) => {
-                    return (
-                      <HorizontalBarChart
-                      title={response.response}
-                      totalRespondent={ response.totalRespondent}
-                      totalResponse={ qResponse.responses.length}
-                      />
-                    ); 
-                  })} 
-               
-              </div>
-            )}
-
-            {qResponse.type === "radio" && (
-              <div className="d-flex justify-content-evenly m-3">
-                <PieChart
-                  className="w-25"
-                  data={qResponse.responseChoices.map((response, index) => {
-                    return {
-                      title: response.response,
-                      value: response.totalRespondent,
-                      color: colors[index],
-                    };
-                  })}
-                />
-                <div>
-                  <div className="m-3">
-                    {qResponse.responseChoices.map((response, index) => {
-                      // style={{backgroundColor:colors[index],marginLeft:'12em'}}
-                      return (
-                        <h6 className="">
-                          <span className="ms-3 p-3 rounded-top rounded-bottom rounded-left">
-                            <CircleIcon
-                              sx={{
-                                color: colors[index],
-
-                                backgroundColor: colors[index],
-                              }}
-                            />
-                          </span>
-                          {response.response}
-                        </h6>
-                      );
-                    })}
-                  </div>
+            <ArrowBackIcon color="dark" fontSize="large" />
+          </Button>
+        </div>
+        <div className="">
+          <Button variant="color-light border" onClick={handlePrint}>
+            <PrintIcon />
+          </Button>
+        </div>
+      </div>
+      <div ref={componentRef} className="mx-5">
+        {questionResponses.length > 0 &&
+          questionResponses.map((qResponse, index) => {
+            return (
+              <div
+                key={index}
+                className="mb-4 py-4 ps-4 border rounded bg-light"
+              >
+         {Object.values(qResponse.responses).reduce((sum,count)=>sum+count,0) !==0 && ( <div>
+                  <p className=" fs-6">{qResponse.text}</p>
                 </div>
-              </div>
-            )}
+                )
+        }
+                <div className="ms-3">
+                  {/* <p>{qResponse  && (qResponse.type === "linear" ? Object.values(qResponse.responses).filter((res)=>res !=0).length  + " responses": Object.keys(qResponse.responses).length + " responses" )}</p> */}
+                </div>
+                {!qResponse.responses && (
+                  <di>No Answers For This Question Yet</di>
+                )}
+                { (
+                  <div>
+                    {qResponse.type === "short" && (
+                      <div className="m-0">
+                        {Object.keys(qResponse.responses).map((response,index) => {
+                          return (
+                            <p key={index} className=" ps-3"> {response}</p>
+                          );
+                        })}
+                      </div>
+                    )}
 
-           </div> )}
-          </div>
-        );
-      })}
+                    {qResponse.type === "checkbox" && (
+                      <div className="m-0 px-0">
+                        {Object.keys(qResponse.responses).map(
+                          (response, index) => {
+                            // console.log('response fro map',response)
+                            return (
+                              <HorizontalBarChart
+                                key={index}
+                                title={response}
+                                totalRespondent={qResponse.responses[response]}
+                                totalResponse={Object.values(
+                                  qResponse.responses
+                                ).reduce(
+                                  (sum, count) => sum * 1 + count * 1,
+                                  0
+                                )}
+                              />
+                            );
+                          }
+                        )}
+                      </div>
+                    )}
+
+                    {qResponse.type === "linear" && (
+                      <div className="d-flex mx-0 px-0">
+                        <VictoryChart
+                          domainPadding={{ x: 10 }}
+                          // theme={VictoryTheme.material}
+                          padding={{ top: 10, bottom: 50, left: 70, right: 50 }}
+                          width={300}
+                          height={180}
+                          // animate={{duration: 2}}
+                        >
+                          <VictoryAxis
+                            label="Question Scales"
+                            tickValues={Object.keys(qResponse.responses)}
+                            padding={{
+                              top: 10,
+                              bottom: 50,
+                              left: 70,
+                              right: 50,
+                            }}
+                            style={{
+                              axis: { stroke: "#756f6a" },
+                              axisLabel: {
+                                fontSize: 7,
+                                padding: 25,
+                                fill: "black",
+                              },
+                              // grid: {stroke: ({ tick }) => tick > 0.5 ? "red" : "grey"},
+                              ticks: { stroke: "grey", size: 5 },
+                              tickLabels: {
+                                fontSize: 7,
+                                fill: "black",
+                                font: "monospaced",
+                                padding: 5,
+                              },
+                            }}
+                          />
+                          <VictoryAxis
+                            theme={VictoryTheme.material}
+                            dependentAxis
+                            label="Number of Responses"
+                            style={{
+                              axis: { stroke: "#756f6a" },
+                              axisLabel: { fontSize: 7, padding: 40 },
+                              // grid: {stroke: ({ tick }) => tick > 0.5 ? "red" : "grey"},
+                              ticks: { stroke: "grey", size: 5 },
+                              tickLabels: {
+                                fontSize: 7,
+                                fill: "black",
+                                padding: 5,
+                              },
+                            }}
+                            // tickFormat specifies how ticks should be displayed
+                            tickValues={Object.values(qResponse.responses)}
+                            tickFormat={(x) =>
+                              `${Math.round(
+                                (x * 100) /
+                                  Object.values(qResponse.responses).reduce(
+                                    (sum, count) => sum * 1 + count * 1,
+                                    0
+                                  )
+                              )}%(${x})`
+                            }
+                          />
+                          <VictoryBar
+                            data={Object.keys(qResponse.responses).map(
+                              (response, index) => {
+                                return {
+                                  response: response,
+                                  responseCount: qResponse.responses[response],
+                                };
+                              }
+                            )}
+                            style={{ data: { fill: "blue" } }}
+                            x="response"
+                            y="responseCount"
+                          />
+                        </VictoryChart>
+                        {/* <BarChart
+                      xAxis="Levels from 0-10"
+                      yAxis="Total Responses"
+                      height={400}
+                      width={400}
+                      data={Object.keys(qResponse.responses).map(
+                        (response, index) => {
+                          // console.log('response fro map',response)
+                          return {
+                            title: response,
+                            value: qResponse.responses[response],
+                            color: colors[index],
+                          };
+                        }
+                      )}
+                    /> */}
+                      </div>
+                    )}
+
+                    {qResponse.type === "radio" && (
+                      <div className="d-flex justify-content-evenly ">
+                        <PieChart
+                          className="w-25"
+                          data={Object.keys(qResponse.responses).map(
+                            (response, index) => {
+                              return {
+                                title: response,
+                                value: qResponse.responses[response],
+                                color: colors[index],
+                              };
+                            }
+                          )}
+                        />
+                        <div>
+                          <div className="m-3">
+                            {Object.keys(qResponse.responses).map(
+                              (response, index) => {
+                                // style={{backgroundColor:colors[index],marginLeft:'12em'}}
+                                return (
+                                  <h6 key={index} className="">
+                                    <span className="ms-3 p-3 rounded-top rounded-bottom rounded-left">
+                                      <CircleIcon
+                                        sx={{
+                                          color: colors[index],
+
+                                          backgroundColor: colors[index],
+                                        }}
+                                      />
+                                    </span>
+                                    {response}
+                                  </h6>
+                                );
+                              }
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+            );
+          })}
+      </div>
     </div>
   );
 }

@@ -13,12 +13,18 @@
     text-decoration: none;
     color: black; 
    font-family: 'Mulish', sans-serif;
-   font-weight: bold;
+   font-weight: bold; 
    font-size: large;
 }
-.nav-item .nav-link:hover{
+.inactive .a:hover {
+  background-color: black;
+  /* opacity: 0.2; */
+
+}
+.nav-item .nav-link .a :hover{
   text-decoration: none !important;
-   
+  background-color: black;
+
   }
   .navLink{
     text-decoration: none;

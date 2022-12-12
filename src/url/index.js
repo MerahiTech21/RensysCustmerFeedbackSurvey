@@ -1,14 +1,43 @@
 import axios from "axios";
 let apiClient = axios.create({
-    baseURL: 'http://192.1.56.1:5000/',
-    headers: {
+  baseURL: "http://survey.merahitechnologies.com/",
+  // baseURL: "http://192.168.0.9:5000/",
 
-         Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('tokenc')}`,
+  // headers: {
 
+  //     Accept: 'application/json',
+  //    'Content-Type': 'application/json',
+  //    Authorization: `Bearer ${localStorage.getItem('token')}`,
+  //     }
+});
 
-    }
-})
+apiClient.interceptors.request.use(
+  function (config) {
+    // Do something before request is sent
 
-export default apiClient  
+    const token = localStorage.getItem("token");
+      config.headers = {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token ? token :'' }`,
+      };
+    
+
+    return config;
+  },
+  function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+  }
+);
+
+apiClient.interceptors.response.use(
+  function (response) {
+    return response;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
+
+export default apiClient;

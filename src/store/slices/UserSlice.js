@@ -2,7 +2,7 @@ import {createSlice} from '@reduxjs/toolkit'
 
 const userSlice = createSlice({
     name:'user',
-    initialState:{token:null,isAuthenticated:false,data:{}},
+    initialState:{token:null,isAuthenticated:false,data:{},farmer:{}},
     reducers:{
         setToken:(state,action)=>{
             state.token = action.payload
@@ -12,6 +12,9 @@ const userSlice = createSlice({
         },
         setUser:(state,action)=>{
             state.data = action.payload
+        },
+        setFarmer:(state,action)=>{
+            state.farmer = action.payload
         },
 
     }

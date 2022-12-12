@@ -1,8 +1,10 @@
 .sideBar{
-    border-right: 2px solid rgb(143, 140, 127) ;
-    background-color: rgb(205, 212, 212);
-    border-bottom-right-radius: 1px;
+    /* border-right: 2px solid rgb(143, 140, 127) ; */
+    /* background-color: rgb(205, 212, 212); */
+    background-color:#ECF1FE;
+    /* border-bottom-right-radius: 1px; */
     box-shadow: 1px;
-    min-height: 100vh;
+    min-height: 90vh;
     min-width: 16% !important ;
+    width: 16% !important ;
 }

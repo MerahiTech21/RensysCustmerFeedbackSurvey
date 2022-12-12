@@ -25,9 +25,9 @@ export default function SurveyList() {
   const [survey, setSurvey] = useState({ });
 
   useEffect(() => {
-    fetchQuestions();
+    fetchSurveys();
   }, []);
-  const fetchQuestions = async () => {
+  const fetchSurveys = async () => {
     dispatch(isLoadingAction.setIsLoading(true))
 
     try {
@@ -84,9 +84,9 @@ export default function SurveyList() {
   return (
     <div className="mx-4 d-flex flex-column">
       <div className="d-flex justify-content-between mb-4">
-        <div> Survey List</div>
+        <div className="mx-5 px-s"><p className="ts-1"> Survey List</p></div>
         <div className="">
-          <button className="btn btn-warning" onClick={addSurveyHandler} >Add New Survey</button>
+          <button className="btn btn-warning text-white" onClick={addSurveyHandler} >Add New Survey</button>
         </div>
       </div>
       {serveyList.length === 0 ? (<div style={{ float:"right"}} className="w-25 align-self-end">
@@ -96,10 +96,10 @@ export default function SurveyList() {
                  
       ):
       
-      (<div className="mt-4">
+      (<div className="mt-4 bg-light mx-2 px-5">
         <Table responsive="md">
           <thead className={classes.header}>
-            <tr>
+            <tr className="mt-0">
               <th>NO</th>
               <th>Name</th>
               <th>Opening Date</th>

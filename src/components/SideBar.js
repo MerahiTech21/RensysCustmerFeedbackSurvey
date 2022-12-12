@@ -12,7 +12,7 @@ const SideBar = () => {
       <div className="my-4 fs-5 fw-bold ms-4">Menu</div>
       <div className="mb-3">
         <NavLink
-          to={"/dashboard"}
+          to={"/"}
           className={({ isActive }) =>
             isActive
               ? classes.active + " border rounded px-1 px-xl-4 py-2"
@@ -61,7 +61,9 @@ const SideBar = () => {
       </div>
       <div className="mb-3">
         <NavLink
-        onClick={()=>{navigate('/login')}}
+        onClick={()=>{
+          localStorage.setItem('token','')
+        }}
           
           className={({ isActive }) =>
             isActive===0

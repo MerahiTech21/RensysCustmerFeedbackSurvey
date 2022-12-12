@@ -8,3 +8,8 @@
     border: none!important;
     background: rgb(145, 81, 81);
 }
+.backButton{
+    box-shadow: none!important;
+    border: none!important;
+    /* cursor: pointer; */
+}

@@ -1,25 +1,18 @@
-import {Fragment,useEffect} from 'react'
+import { Fragment, useEffect } from "react";
 
-import Spiner from './Spiner';
-import Router from './routes';
+import Router from "./routes";
 
-import './App.css';
-import { useSelector } from 'react-redux';
-
+import "./App.css";
 
 function App() {
-  const isLoading = useSelector((state=>state.loading.isLoading))
+  
 
-  return ( 
-    <div >
-    <Router />
-    
-    {
-      isLoading && (<Spiner /> )
-    }    
-    
-    </div>
-    
+  return (
+    <Fragment>
+      <Router />
+
+      
+    </Fragment> 
   );
 }
 

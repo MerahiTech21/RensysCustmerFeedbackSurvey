@@ -112,6 +112,7 @@ function AddSurvey(props) {
         onHide={handleClose}
         backdrop="static"
         keyboard={false}
+        className="bg-light"
       >
         <Modal.Header closeButton>
           <Modal.Title>{props.title}</Modal.Title>
