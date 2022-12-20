@@ -1,5 +1,5 @@
 import { Alert } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Form, Modal, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { buttonAction } from "../store/slices/ButtonSpinerSlice";
@@ -24,6 +24,14 @@ const Setting = () => {
   });
   const isLoading = useSelector((state) => state.btn.isLoading);
   const dispatch=useDispatch()
+  const [user,setUser]=useState({});
+  useEffect(()=>{
+    const user=localStorage.getItem('user');
+    if(user){
+         setUser(JSON.parse(user))
+
+    }
+  },[])
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -33,6 +41,11 @@ const Setting = () => {
         [name]: value,
       };
     });
+    if (e.target.value) {
+      setError((prevErrors) => {
+        return { ...prevErrors, [name]: "" };
+      });
+    }
     console.log('changed' ,e.value)
   };
 
@@ -112,19 +125,19 @@ const Setting = () => {
         </div>
       )}
 
-      <div className="mx-3 px-3 mt-3 py-3 border-bottom">Account Setting</div>
+      <div className="mx-3 px-3 mt-3 py-3 border-bottom fw-bold" >Account Setting</div>
 
       <div className="mx-3 px-3 border-bottom">
-        <h5>Name : Alemu Tebkew</h5>
+        <p>Name : {user?.name}</p>
       </div>
       <div className="mx-3 px-3 border-bottom">
-        <h5>Email : alemteb1010@gmail.com</h5>
+        <p>Email : {user?.email}</p>
       </div>
       <div className="mx-3 px-3 border-bottom">
-        <h5>Phone Number : 0938232169</h5>
+        <p>Phone Number : {user?.phoneNumber}</p>
       </div>
       <div className="align-self-end mx-3 px-3 my-3">
-        <Button onClick={() => setShow(true)} variant="dark">
+        <Button onClick={() => setShow(true)} variant="warning">
           Change Password
         </Button>
       </div>
@@ -184,7 +197,7 @@ const Setting = () => {
           >
             Cancel
           </Button>
-          <Button onClick={submitPasswored} variant="dark">
+          <Button onClick={submitPasswored} variant="warning">
             <span className="me-2">
               {isLoading && (
                 <Spinner animation="border" variant="light" size="sm" />

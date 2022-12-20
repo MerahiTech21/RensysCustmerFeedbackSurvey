@@ -21,13 +21,13 @@ function Header() {
         {/* </div> */}
 
         <h5>
-          <span className="headerLogoName1">Rensys </span>{" "}
-          <span className="headerLogoName2"> Engineering</span>
+          <span className="headerLogoName1">RENSYS </span>{" "}
+          <span className="headerLogoName2"> ENGINEERING</span>
         </h5>
       </div>
       <div className="d-flex align-items-end mx-5 ">
         <Avatar className="mx-3" />
-        <h6 className=" text-white">{user?.name}</h6>
+        <h6 className="text-white pb-2">{user?.name}</h6>
       </div>
     </div>
   );

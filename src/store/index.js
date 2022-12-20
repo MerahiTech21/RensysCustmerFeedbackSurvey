@@ -5,6 +5,7 @@ import SurveyReducer from "./slices/ServeySlice";
 import BtnSpinerReducer from "./slices/ButtonSpinerSlice";
 import UserReducer from "./slices/UserSlice";
 import IsLoadingReducer from './spinerSlice'
+import EncoderReducer from './slices/EncoderSlice'
 
 const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ const store = configureStore({
     survey: SurveyReducer,
     btn: BtnSpinerReducer,
     user:UserReducer,
+    encoder:EncoderReducer,
     loading:IsLoadingReducer,
 
   },

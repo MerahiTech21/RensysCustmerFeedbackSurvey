@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import DashboardCard from '../components/DashboardCard'
+import { surveyAction } from '../store/slices/ServeySlice';
 import { isLoadingAction } from '../store/spinerSlice';
 import apiClient from '../url';
 
@@ -22,7 +23,7 @@ function Dashboard() {
       if (response.status === 200) {
         console.log(response.data)
         setSurveyList(response.data)
-        // dispatch(surveyAction.setSurveys(response.data));
+        dispatch(surveyAction.setSurveys(response.data));
       }
     } catch (error) {
       console.log(error);

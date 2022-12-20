@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
@@ -7,25 +7,48 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import questionResponses from "../../sample-data/SampleData";
 // import { usersResponse } from "../../sample-data/SampleData";
 
-import classes from "./Individual.module.css";
+// import classes from "./Individual.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import { useReactToPrint } from "react-to-print";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { responseAction } from "../../store/slices/QuestionResponseSlice";
+import apiClient from "../../url";
+import { isLoadingAction } from "../../store/spinerSlice";
 
-function Individual() {
+function RespondentAnswer() {
   const [current, setCurrent] = useState(0);
-  const usersResponse = useSelector(
-    (state) => state.response.individualResponses
-  );
+  const [usersResponse, setUsersResponse] = useState([]);
+  const [userResponse, setUserResponse] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const surveyId=searchParams.get('surveyId')
+  const {respId}=useParams()
+
+  useEffect(() => {
+    fetchRespondentQuestions();
+  }, []);
+  const fetchRespondentQuestions = async () => {
+    try {
+      dispatch(isLoadingAction.setIsLoading(true));
+       const response=await apiClient.get(`/api/responses/individual/${surveyId}`)
+      if (response.status === 200) {
+        setUsersResponse(response.data);
+        setUserResponse(response.data.find((da)=>da.id == respId)) 
+        console.log('fetched Indi= ',response.data)
+
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      dispatch(isLoadingAction.setIsLoading(false));
+
+    }
+  };
   const componentRef = useRef();
   const navigate=useNavigate()
   const dispatch=useDispatch()
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-  });
-
+ 
   const deleteUserResponse=(current)=>{
     dispatch(responseAction.deleteUserResponse(current))
     setCurrent(0)
@@ -48,107 +71,49 @@ function Individual() {
     console.log("numbers", numbers);
     return numbers;
   };
-  const onQuestionChange = (e) => {
-    setCurrent(e.target.value);
-  };
+
+
   if (usersResponse.length == 0) {
     return <div>no data</div>;
   }
   return (
     <div>
-      <div className="d-flex justify-content-evenly align-items-center mb-3 mx-5">
-      <div className="pe-0  ">
-          <Button
-            variant="none"
-            className={"me-2 "}
-            onClick={() => navigate(-1)}
-          >
-            <ArrowBackIcon color="dark" fontSize="large" />
-          </Button>
-        </div>
-        <div className="w-25">
-          <Form.Select
-            className="bg-light"
-            onChange={onQuestionChange}
-            value={current}
-          >
-            {usersResponse.map((userResp, index) => {
-              return (
-                <option key={index} value={index}>
-                  {index + 1 + ". " + userResp.name}
-                </option>
-              );
-            })}
-          </Form.Select>
-        </div>
-        <div className="d-flex me-5">
-          <Button
-            variant="black"
-            disabled={current < 1}
-            onClick={() => {
-              setCurrent(current - 1);
-            }}
-          >
-            <NavigateBeforeIcon />
-          </Button>
-
-          <h6 className="m-1 p-1">{current * 1 + 1}</h6>
-          <Button
-            variant="black"
-            onClick={() => {
-              setCurrent(current * 1 + 1);
-            }}
-            disabled={current >= usersResponse.length - 1}
-          >
-            <NavigateNextIcon />
-          </Button>
-        </div>
-
-        <div className="d-flex">
-          <div className="align-self-end me-3">
-            <Button
-              variant="none"
-              className={classes.printButton}
-              onClick={handlePrint}
-            >
-              <PrintIcon /> Print
-            </Button>
-          </div>
-          <div className="align-self-end">
-            <Button variant="none" className={classes.deleteButton} onClick={()=>deleteUserResponse(current)} >
-              <DeleteIcon /> Delete 
-            </Button>
-          </div>
-        </div>
-      </div>
-
       <div ref={componentRef} className="mx-5">
+      <div className="">
+        <Button
+          variant="none"
+          className= "me-2 flex-start"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowBackIcon color="dark" fontSize="large" />
+        </Button>
+      </div>
         <div className="d-flex justify-content-start mx-5">
           <div className="ms-5 px-5 align-self-start">
             <p>
-              <u>Name : {usersResponse[current].name}</u>
+              <u>Name : {userResponse.name}</u>
             </p>
             <p>
-              <u>Phone Number : {usersResponse[current].phoneNo}</u>
-            </p>
+              <u>Phone Number : {userResponse.phoneNo}</u>
+            </p> 
           </div>
           <div className="ms-5">
             <p>
-              <u>Region : {usersResponse[current].region}</u>
+              <u>Region : {userResponse.region}</u>
             </p>
             <p>
-              <u>Zone : {usersResponse[current].zone}</u>
+              <u>Zone : {userResponse.zone}</u>
             </p>
             <p>
-              <u>Woreda : {usersResponse[current].woreda}</u>
+              <u>Woreda : {userResponse.woreda}</u>
             </p>
             <p>
-              <u>Kebele : {usersResponse[current].kebele}</u>
+              <u>Kebele : {userResponse.kebele}</u>
             </p>
           </div>
         </div>
 
-        {usersResponse[current].questions.map((question, index) => {
+        {userResponse.questions.map((question, index) => {
           return (
             <div key={index}>
               <div className="mb-3 mx-5">{index * 1 + 1 + ". " + question.text}</div>
@@ -166,9 +131,8 @@ function Individual() {
                             type={question.type}
                             id={opt.id}
                             label={opt.text}
-                             disabled
-                            readOnly={'readonly'}
-                            defaultChecked={question.responses.some(
+                            //  disabled
+                            checked={question.responses.some(
                               (ans) => ans.answer === opt.text
                             )}
                           />
@@ -185,12 +149,12 @@ function Individual() {
                           <Form.Check
                             type="radio"
                             // id={opt.id}
-                             id={"linear" + usersResponse[current].id + opt}
+                             id={"linear" + userResponse.id + opt}
 
                             //  label={opt}
-                            disabled
+                            // disabled
                             // checked={opt === existResp}
-                            defaultChecked={question.responses.some(
+                            checked={question.responses.some(
                               (ans) => ans.answer == opt
                             )}
                           />
@@ -198,7 +162,7 @@ function Individual() {
                           <Form.Label
                           className="my-0 pb-0"
                             htmlFor={
-                              "linear" + usersResponse[current].id + opt
+                              "linear" + userResponse.id + opt
                             }
                           >
                             {opt}
@@ -217,4 +181,4 @@ function Individual() {
   );
 }
 
-export default Individual;
+export default RespondentAnswer;

@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button";
 import Nav from "react-bootstrap/Nav";
 import { Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import TimeAgo from "./TimeAgo";
 
 function DashboardCard(props) {
   const navigate = useNavigate();
@@ -15,9 +16,9 @@ function DashboardCard(props) {
         <div className="m-2 mx-5">Active Surveys</div>
         <Row xs={1} md={3} className="g-2">
           {activeSurveies.length === 0 ? (<div className="mx-5 flex-center" >No Active Survey</div>): (
-            activeSurveies.map((survey) => {
+            activeSurveies.map((survey,index) => {
             return (
-              <Col>
+              <Col key={index}>
                 <Card className="m-3 p-3 bg-light">
                   {/* <Card.Header>{survey.name}</Card.Header> */}
 
@@ -27,11 +28,11 @@ function DashboardCard(props) {
                     <Card.Text>Total Questions 16 </Card.Text>
                     <Card.Text>Total Response 16 </Card.Text>
                     <Card.Text>Total Respondent 16 </Card.Text>
-                    <Button onClick={()=>navigate('/surveys')} variant="dark">Detail</Button>
+                    <Button onClick={()=>navigate(`/surveys/${survey.id}/questions`)} variant="warning">Detail</Button>
                   </Card.Body>
                   <Card.Footer>
                     <small className="text-muted">
-                      Last updated 3 mins ago
+                    <TimeAgo timestamp={survey.createdAt} />
                     </small>
                   </Card.Footer>
                 </Card>
@@ -47,20 +48,20 @@ function DashboardCard(props) {
       <div className=" border rounded bg-white">
         <div className="m-2 mx-5">Closed Surveys</div>
         <Row xs={1} md={3} className="g-2">
-          {closedSurveies.slice(0,3).map((survey) => {
+          {closedSurveies.slice(0,3).map((survey,index) => {
             return (
-              <Col>
+              <Col key={index}>
                 <Card className="m-3 p-3 bg-light">
                   <Card.Header>{survey.name}</Card.Header>
 
                   <Card.Body>
                     <Card.Title>{survey.name}</Card.Title>
                     <Card.Text>{survey.description.substring(0,100)} </Card.Text>
-                    <Button onClick={()=>navigate('/surveys')} variant="dark">Detail</Button>
+                    <Button onClick={()=>navigate('/surveys')} variant="warning">Detail</Button>
                   </Card.Body>
                   <Card.Footer>
                     <small className="text-muted">
-                      Closed 3 mins ago
+                    <TimeAgo timestamp={survey.updatedAt} />
                     </small>
                   </Card.Footer>
                 </Card>

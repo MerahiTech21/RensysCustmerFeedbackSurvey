@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Button, Modal, Spinner } from "react-bootstrap";
 import Form from "react-bootstrap/Form";
-import ValidateSurvey from "./validation";
+import ValidateSurvey from "../validation";
 import classes from "./Survey.module.css";
 import { useDispatch } from "react-redux";
 import { nanoid } from "@reduxjs/toolkit";
-import { surveyAction } from "../store/slices/ServeySlice";
-import { buttonAction } from "../store/slices/ButtonSpinerSlice";
+import { surveyAction } from "../../store/slices/ServeySlice";
+import { buttonAction } from "../../store/slices/ButtonSpinerSlice";
 import { useSelector } from "react-redux";
-import apiClient from "../url";
+import apiClient from "../../url";
 
 function AddSurvey(props) {
   const [survey, setSurvey] = useState({
@@ -167,6 +167,9 @@ function AddSurvey(props) {
           </Form>
         </Modal.Body>
         <Modal.Footer>
+        <Button onClick={handleClose} variant="none" >
+            Cancel
+          </Button>
     {  props.title === 'Add Survey' ? (  <Button onClick={saveHandler} variant="none" className={classes.btn}>
             <div className="d-flex align-items-center">
               <span>{props.title}</span>
@@ -190,9 +193,7 @@ function AddSurvey(props) {
           </Button>
           )
           }
-          <Button onClick={handleClose} variant="none" className={classes.btn}>
-            Cancel
-          </Button>
+     
         </Modal.Footer>
       </Modal>
     </>

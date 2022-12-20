@@ -5,6 +5,11 @@
     /* border-bottom-right-radius: 1px; */
     box-shadow: 1px;
     min-height: 90vh;
-    min-width: 16% !important ;
-    width: 16% !important ;
+    min-width: 18% !important ;
+    /* width: 16% !important ; */
 }
+a:hover {
+
+    color: #FF7e00; 
+  
+  }

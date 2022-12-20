@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Form from "react-bootstrap/Form";
-import { Button, Spinner } from "react-bootstrap";
+import { Button, Modal, Spinner } from "react-bootstrap";
 import { useState } from "react";
 import apiClient from "../url";
 import classes from "./Question.module..css";
@@ -14,7 +14,7 @@ import { questionAction } from "../store/slices/QuestionSlice";
 import { surveyAction } from "../store/slices/ServeySlice";
 import Alert from "@mui/material/Alert";
 import Stack from "@mui/material/Stack"; // import SelectOption from "../components/SelectOption";
-import { MenuItem, TextField } from "@mui/material";
+import { MenuItem, Snackbar, TextField } from "@mui/material";
 import { isLoadingAction } from "../store/spinerSlice";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { buttonAction } from "../store/slices/ButtonSpinerSlice";
@@ -45,7 +45,7 @@ export default function Questions() {
   const selectedSurvey = useSelector((state) => state.survey.selectedSurvey);
 
   const [questions, setQuestions] = useState([]);
-  const [buttonIndex, setButtonIndex] = useState('');
+  const [buttonIndex, setButtonIndex] = useState("");
   const [typingAt, setTypingAt] = useState();
   const [lowerLevel, setLowerLevel] = useState(0);
   const [uperLevel, setUpperLevel] = useState(5);
@@ -53,7 +53,8 @@ export default function Questions() {
     status: false,
     type: "success",
   });
-
+  const [showCopyModal, setShowCopyModal] = useState(false);
+  const [showSnackBar,setShowSnackBar]=useState(false)
   const { surveyId } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -188,12 +189,12 @@ export default function Questions() {
       } else {
         qns.splice(deletedIndex, 1);
         setQuestions(qns);
-        dispatch(questionAction.deletedQuestion(questionId));
+        // dispatch(questionAction.deletedQuestion(questionId));
       }
-      setShowAlert({ status: true, type: "success" });
+      // setShowAlert({ status: true, type: "success" });
     } catch (error) {
       console.log(error);
-      setShowAlert({ status: true, type: "error" });
+      // setShowAlert({ status: true, type: "error" });
     } finally {
       // dispatch(buttonAction.setBtnSpiner(false));
     }
@@ -260,7 +261,7 @@ export default function Questions() {
     try {
       // setTypingAt(undefined)
 
-      setButtonIndex('p')
+      setButtonIndex("p");
       dispatch(buttonAction.setBtnSpiner(true));
 
       const response = await apiClient.put(`/api/surveys/status/${surveyId}`);
@@ -270,7 +271,7 @@ export default function Questions() {
           surveyAction.editSurvey({
             ...editedSurvey,
             status: !editedSurvey.status,
-          }) 
+          })
         );
         dispatch(
           surveyAction.setSelectedSurvey({
@@ -282,8 +283,7 @@ export default function Questions() {
     } catch (error) {
     } finally {
       dispatch(buttonAction.setBtnSpiner(false));
-      setButtonIndex('')
-
+      setButtonIndex("");
     }
   };
   const addOption = (questionId, flag) => {
@@ -364,17 +364,21 @@ export default function Questions() {
     setUpperLevel(e.target.value);
     setTypingAt(questionIndex);
   };
+  var oo;
   return (
     <div className={classes.container + " m-1 mx-5"}>
       <div className="d-flex justify-content-between mb-4 px-5 mx-lg-5 mx-md-1 mx-sm-1 ">
-        <div>
-          {" "}
-          <Link type="button" onClick={() => navigate(-1)}>
-            {selectedSurvey.name} > Questions
-          </Link>{" "}
-          <span className="ms-5">{questions.length + " Questions Added"}</span>{" "}
-        </div>
         <div className="d-flex flex-end me-2">
+          <div className="me-2">
+            {" "}
+            <button
+              type="button"
+              className="btn btn-dark"
+              onClick={() => setShowCopyModal(true)}
+            >
+              Get Link
+            </button>{" "}
+          </div>
           <div className="me-2">
             {questions.length !== 0 && (
               <button
@@ -383,17 +387,19 @@ export default function Questions() {
                   navigate(`/surveys/${selectedSurvey.id}/user-register`)
                 }
               >
-
                 Preview
               </button>
             )}
           </div>
           {questions.length !== 0 && selectedSurvey.status * 1 === 0 ? (
             <div className="">
-              <button className="btn btn-dark" onClick={publishSurveyQuestion} id='p'>
-              
-              <span className="me-2">
-                  {isLoading && (buttonIndex === 'p') &&(
+              <button
+                className="btn btn-dark"
+                onClick={publishSurveyQuestion}
+                id="p"
+              >
+                <span className="me-2">
+                  {isLoading && buttonIndex === "p" && (
                     <Spinner animation="border" variant="light" size="sm" />
                   )}
                 </span>
@@ -408,11 +414,11 @@ export default function Questions() {
                   id="h"
                   onClick={publishSurveyQuestion}
                 >
-                       <span className="me-2">
-                  {isLoading && (buttonIndex === 'p') &&(
-                    <Spinner animation="border" variant="light" size="sm" />
-                  )}
-                </span>
+                  <span className="me-2">
+                    {isLoading && buttonIndex === "p" && (
+                      <Spinner animation="border" variant="light" size="sm" />
+                    )}
+                  </span>
                   Hide
                 </button>
               </div>
@@ -436,17 +442,21 @@ export default function Questions() {
               width: "50%",
               float: "right",
             }}
-            
             variant="filled"
             severity={showAlert.type}
-            action={setTimeout(() => setShowAlert({ status: false, type: "success" }), 5000)}
+            // action={}
             onClose={() => setShowAlert({ status: false, type: "success" })}
           >
-          
-
-            {/* ()=>setShowAlert(false) */}
+            {
+              (oo = setTimeout(
+                () => setShowAlert({ status: false, type: "success" }),
+                5000
+              )
+                ? ""
+                : "")
+            }
             {showAlert.type == "error" ? (
-              <div className="mx-5" >Error While Saving</div>
+              <div className="mx-5">Error While Saving</div>
             ) : (
               <div className="mx-5">Question Saved Successfully</div>
             )}
@@ -461,6 +471,9 @@ export default function Questions() {
         >
           <ArrowBackIcon color="dark" fontSize="large" />
         </Button>
+        <span className="ms-5 fw-bold">
+          {questions.length + " Questions Added"}
+        </span>{" "}
       </div>
 
       <div
@@ -520,7 +533,9 @@ export default function Questions() {
                       onChange={(event) => handleQuestion(event, question.id)}
                       // onBlur={() => setTypingAt(null)}
                     ></Form.Control>
-                    <span>{question.required && "*"}</span>
+                    <span style={{ color: "red" }}>
+                      {question.required == 1 ? "*" : ""}
+                    </span>
                   </div>
                   <div>
                     {question.type === "linear" ? (
@@ -696,7 +711,7 @@ export default function Questions() {
                             }}
                           >
                             <span className="me-2">
-                              {isLoading && (
+                              {isLoading && buttonIndex !== "p" && (
                                 <Spinner
                                   animation="border"
                                   variant="light"
@@ -714,7 +729,7 @@ export default function Questions() {
                             }}
                           >
                             <span className="me-2">
-                              {isLoading && (
+                              {isLoading && buttonIndex !== "p" && (
                                 <Spinner
                                   animation="border"
                                   variant="light"
@@ -734,6 +749,34 @@ export default function Questions() {
           })
         )}
       </div>
+
+      <Modal show={showCopyModal} onBackdropClick={null}>
+        <Modal.Body className="d-flex justify-content-between">
+          <Link className="me-3">{`http://customerfeedbackservey.merahitechnologies.com/fill-user/${surveyId}`}</Link>
+        </Modal.Body>
+        <Modal.Footer>
+          {" "}
+          <Button
+            variant="warning"
+            className="btn btn-small"
+            onClick={() => {
+              navigator.clipboard.writeText(`http://customerfeedbackservey.merahitechnologies.com/fill-user/${surveyId}`);
+              setShowSnackBar(true)
+              setShowCopyModal(false)
+            }}
+          >
+            Copy Link
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Snackbar
+        open={showSnackBar}
+        autoHideDuration={2000}
+        onClose={()=>setShowSnackBar(false)}
+        message="Link Copied To Clipboard"
+        // action={action}
+      />
     </div>
   );
 }

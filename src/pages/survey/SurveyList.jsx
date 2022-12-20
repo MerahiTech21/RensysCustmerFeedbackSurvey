@@ -5,16 +5,15 @@ import MoreVertOutlinedIcon from "@mui/icons-material/MoreVertOutlined";
 
 import classes from "./Survey.module.css";
 import { useNavigate } from "react-router-dom";
-import { allSurvey } from "../sample-data/SampleData";
 import AddSurvey from "./AddSurvey";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { surveyAction } from "../store/slices/ServeySlice";
-import apiClient from "../url";
-import { questionAction } from "../store/slices/QuestionSlice";
+import { surveyAction } from "../../store/slices/ServeySlice";
+import apiClient from "../../url";
+import { questionAction } from "../../store/slices/QuestionSlice";
 import { Alert } from "@mui/material";
-import { isLoadingAction } from "../store/spinerSlice";
-
+import { isLoadingAction } from "../../store/spinerSlice";
+ 
 export default function SurveyList() {
   const navigate = useNavigate();
   const dispatch =useDispatch()
@@ -43,7 +42,7 @@ export default function SurveyList() {
 
     }
   };
-
+   
   const addSurveyHandler = () =>{
     setModalTitle('Add Survey')
     setShow(true)
@@ -84,30 +83,28 @@ export default function SurveyList() {
   return (
     <div className="mx-4 d-flex flex-column">
       <div className="d-flex justify-content-between mb-4">
-        <div className="mx-5 px-s"><p className="ts-1"> Survey List</p></div>
+        <div className="mx-5 px-s"><p className="fs-5 fw-bold"> Survey List</p></div>
         <div className="">
           <button className="btn btn-warning text-white" onClick={addSurveyHandler} >Add New Survey</button>
         </div>
       </div>
       {serveyList.length === 0 ? (<div style={{ float:"right"}} className="w-25 align-self-end">
-        No Survey
-  
+        No Survey 
       </div>
                  
       ):
       
-      (<div className="mt-4 bg-light mx-2 px-5">
+      (<div className="mt-1 bg-light mx-2 px-4">
         <Table responsive="md">
           <thead className={classes.header}>
             <tr className="mt-0">
               <th>NO</th>
               <th>Name</th>
-              <th>Opening Date</th>
+              <th style={{whiteSpace:"nowrap"}}>Opening Date</th>
               <th>Closing Date</th>
               <th>Status</th>
               <th>Description</th>
               <th>Actions</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -118,7 +115,7 @@ export default function SurveyList() {
                   <td className="p-3">{survey.name}</td>
                   <td style={{whiteSpace:"nowrap"}} className="p-3">{formatSurveyDate(survey.openingAt)}</td>
                   <td style={{whiteSpace:"nowrap"}} className="p-3">{formatSurveyDate(survey.closingAt) }</td>
-                  <td  className="p-3">{survey.status === true ? 'Opened' : 'Closed'}</td>
+                  <td  className="p-3">{survey.status == 1 ? 'Opened' : 'Closed'}</td>
                   <td className="p-3">{survey.description}</td>
                   <td className="onPrintDnone">
                     <Dropdown>

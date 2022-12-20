@@ -1,7 +1,7 @@
 import axios from "axios";
 let apiClient = axios.create({
-  baseURL: "http://survey.merahitechnologies.com/",
-  // baseURL: "http://192.168.0.9:5000/",
+  // baseURL: "http://survey.merahitechnologies.com/",
+  baseURL: "http://192.168.0.9:5000/",
 
   // headers: {
 

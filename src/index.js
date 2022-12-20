@@ -6,7 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Provider } from 'react-redux';
 import store from './store/index';
 import { BrowserRouter } from 'react-router-dom';
-  
+// import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
@@ -20,4 +20,5 @@ root.render(
   </React.StrictMode>
 );
 
-
+// swDev()
+// serviceWorkerRegistration.register();

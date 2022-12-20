@@ -215,7 +215,7 @@ function Preview() {
         if (response.status === 201) {
           // fetchUserData();
           console.log("success", response.data);
-          //  navigate(from,{replace:true})
+           navigate(`/${surveyId}/questions`)
         }
       } catch (err) {
         console.log(err);

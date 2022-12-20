@@ -3,6 +3,8 @@ import classes from "./SideBar.module.css";
 import SettingsIcon from '@mui/icons-material/Settings';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 const SideBar = () => {
 
 
@@ -15,12 +17,12 @@ const SideBar = () => {
           to={"/"}
           className={({ isActive }) =>
             isActive
-              ? classes.active + " border rounded px-1 px-xl-4 py-2"
-              : classes.inactive + " px-1 px-xl-4 py-2"
+            ? classes.active + " border rounded px-1 px-xl-4 py-2"
+            : classes.inactive + " px-1 px-xl-4 py-2 "
           }
         >
           <span className="fs-5 me-2">
-            <i className="fas fa-th-large"></i>
+            <DashboardIcon/>
           </span>
           <span className="me-1">Dashboard</span>
         </NavLink>
@@ -32,7 +34,7 @@ const SideBar = () => {
           className={({ isActive }) =>
             isActive
               ? classes.active + " border rounded px-1 px-xl-4 py-2"
-              : classes.inactive + " px-1 px-xl-4 py-2 navLink"
+              : classes.inactive + " px-1 px-xl-4 py-2 "
           }
         >
           <span className="fs-5 me-2">
@@ -43,6 +45,22 @@ const SideBar = () => {
         </NavLink>
       </div>
 
+      <div className="mb-3">
+        <NavLink
+          to={"/users"}
+          className={({ isActive }) =>
+            isActive
+              ? classes.active + " border rounded px-1 px-xl-4 py-2"
+              : classes.inactive + " px-1 px-xl-4  py-2"
+          }
+        >
+          <span className="fs-5 me-2">
+           <PersonIcon/>
+            {/* <i className="fa-solid fa-users"></i> */}
+          </span>
+          <span className="me-1" >Data Collector</span>
+        </NavLink>
+      </div>
       <div className="mb-3">
         <NavLink
           to={"/setting"}

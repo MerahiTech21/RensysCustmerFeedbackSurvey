@@ -47,13 +47,23 @@ function Answer() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
+
+        if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+        .register("/sw.js")
+        .then(serviceWorker => {
+          console.log("Service Worker registered: ", serviceWorker);
+        })
+        .catch(error => {
+          console.error("Error registering the Service Worker: ", error);
+        });
+    }
     fetchQuestions();
     fetchSelectedServey();
 
     const check = async () => {
       try {
-        const online = await fetch(
-          "http://192.168.0.5:5000/api/surveys/ws/echo",
+        const online = await apiClient.get("/api/surveys/ws/echo",
           { cache: "no-store" }
         );
         const status = online.status >= 200 && online.status < 300;
@@ -239,8 +249,8 @@ function Answer() {
 
   const checkOnlineStatus = async () => {
     try {
-      const online = await fetch(
-        "http://192.168.0.5:5000/api/surveys/ws/echo",
+      const online = await apiClient(
+        "api/surveys/ws/echo",
         { cache: "no-store" }
       );
       return online.status >= 200 && online.status < 300; // either true or false
@@ -262,6 +272,7 @@ function Answer() {
       const oneData = formatted[index];
       await db.answers.add(oneData);
     }
+  
   };
 
   const submitResponse = async (e) => {
@@ -309,12 +320,14 @@ function Answer() {
   console.log("offline ", answers);
 
   return (
-    <div className="d-flex flex-column align-items-center justify-content-center px-sm-0 mx-lg-5 px-lg-5 border">
+    <div className="d-flex flex-column align-items-center justify-content-center px-sm-0 mx-lg-5 px-lg-5">
       <div className="mx-lg-5 mx-sm-1 px-0">
-        {/* <div><UserRegister/></div> */}
-        {questions.map((question, index) => {
+      
+        {
+          questions.length == 0? <div className="m-5 p-5 fw-bold"> No Questions Available to This Survey to Respond</div> :(
+        questions.map((question, index) => {
           return (
-            <div className="border my-3 p-3 m-3 px-sm-1 rounded d-flex  flex-column justify-content-start align-items-space bg-light  mx-lg-5">
+            <div key={index} className="border my-3 p-3 m-3 px-sm-1 rounded d-flex  flex-column justify-content-start align-items-space bg-light  mx-lg-5">
               <div className="mb-3 mx-lg-5">
                 {question.required
                   ? index + 1 + "." + " * " + question.text
@@ -326,9 +339,9 @@ function Answer() {
                     {returnArray(
                       Number(question.responseChoices[0].text),
                       Number(question.responseChoices[1].text)
-                    ).map((opt) => {
+                    ).map((opt,index) => {
                       return (
-                        <div className="my-2 mx-lg-3 mx-sm-2 mx-md-3 px-sm-2 px-md-2 ">
+                        <div key={index}  className="my-2 mx-lg-3 mx-sm-2 mx-md-3 px-sm-2 px-md-2 ">
                           <Form.Check
                             className=""
                             type="radio"
@@ -370,11 +383,11 @@ function Answer() {
                 ) : question.type === "radio" ? (
                   question.responseChoices.map((opt, index) => {
                     return (
-                      <Form.Group>
-                        <div key={index}>
+                      <Form.Group key={index}>
+                        <div >
                           <Form.Check
                             type={question.type}
-                            key={index}
+                            // key={index}
                             id={opt.id}
                             name={question.id}
                             value={opt.text}
@@ -388,11 +401,11 @@ function Answer() {
                 ) : (
                   question.responseChoices.map((opt, index) => {
                     return (
-                      <Form.Group>
-                        <div key={index}>
+                      <Form.Group key={index}>
+                        <div >
                           <Form.Check
                             type={question.type}
-                            key={index}
+                            // key={index}
                             id={"op" + question + index}
                             name={question.id}
                             label={opt.text}
@@ -433,7 +446,10 @@ function Answer() {
               </div>
             </div>
           );
-        })}
+        })
+          )
+        }
+        { questions.length != 0 && (
         <div className=" mx-3 ms-lg-5 py-lg-1 px-lg-1 ps-sm-1  my-3 d-flex justify-content-between ">
           <div className="d-flex m-sm-1 px-sm-1 py-sm-1 py-lg-0 justify-content-start ">
             <Button
@@ -459,6 +475,7 @@ function Answer() {
             )}
           </div>
         </div>
+        )}
       </div>
     </div>
   );
