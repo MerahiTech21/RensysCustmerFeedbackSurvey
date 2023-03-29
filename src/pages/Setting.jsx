@@ -16,6 +16,7 @@ const Setting = () => {
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",
+    notify:""
   });
 
   const [showAlert, setShowAlert] = useState({
@@ -51,7 +52,7 @@ const Setting = () => {
 
   const submitPasswored = async () => {
     const err = validatePassword(data);
-    setError(err);
+    setError({...err,notify:""});
 
     console.log('errors',Object.values(err).length)
     console.log('errors2',err)
@@ -59,13 +60,13 @@ const Setting = () => {
       try {
         dispatch(buttonAction.setBtnSpiner(true));
 
-        const response = await apiClient.put("/api/users/password-reset", data);
+        const response = await apiClient.put("/api/encoders/password-reset", {...data,id:user?.id});
         if (response.status === 200) {
-          console.log('data',response.data)
-        }
+         setShow(false)
+        } 
       } catch (error) {
         console.log('Error ',error)
-
+        setError({...error,notify:error.response.data.msg})
       }
       finally{
         dispatch(buttonAction.setBtnSpiner(false));
@@ -97,33 +98,7 @@ const Setting = () => {
 
   return (
     <div className="d-flex flex-column bg-light shadow-sm border m-5">
-      {showAlert.status == true && (
-        <div className="">
-          <Alert
-            style={{
-              position: "fixed",
-              top: 10,
-              right: 10,
-              width: "50%",
-              float: "right",
-            }}
-            variant="filled"
-            severity={showAlert.type}
-            action={setTimeout(
-              () => setShowAlert({ status: false, type: "success" }),
-              5000
-            )}
-            onClose={() => setShowAlert({ status: false, type: "success" })}
-          >
-            {/* ()=>setShowAlert(false) */}
-            {showAlert.type == "error" ? (
-              <div className="mx-5">Error While Saving</div>
-            ) : (
-              <div className="mx-5">Question Saved Successfully</div>
-            )}
-          </Alert>
-        </div>
-      )}
+    
 
       <div className="mx-3 px-3 mt-3 py-3 border-bottom fw-bold" >Account Setting</div>
 
@@ -131,10 +106,7 @@ const Setting = () => {
         <p>Name : {user?.name}</p>
       </div>
       <div className="mx-3 px-3 border-bottom">
-        <p>Email : {user?.email}</p>
-      </div>
-      <div className="mx-3 px-3 border-bottom">
-        <p>Phone Number : {user?.phoneNumber}</p>
+        <p>Phone Number : {user?.phoneNo}</p>
       </div>
       <div className="align-self-end mx-3 px-3 my-3">
         <Button onClick={() => setShow(true)} variant="warning">
@@ -185,6 +157,7 @@ const Setting = () => {
               </span>
             </Form.Group>
           </Form>
+          <p className={classes.errorText+' pt-2'} >{error.notify}</p>
         </Modal.Body>
         <Modal.Footer>
           <Button

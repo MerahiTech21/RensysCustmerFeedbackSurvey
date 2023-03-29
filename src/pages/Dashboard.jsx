@@ -8,34 +8,21 @@ import apiClient from '../url';
 
 function Dashboard() {
 
-  const navigate = useNavigate();
-  const dispatch =useDispatch()
-  const [serveyList,setSurveyList]=useState([])
-  // const serveyList=useSelector(state=>state.survey.surveys)
+
+  const [survey,setSurvey]=useState({});
+
   useEffect(() => {
-    fetchSurveys();
-  }, []);
-  const fetchSurveys = async () => {
-    dispatch(isLoadingAction.setIsLoading(true))
-
-    try {
-       const response=await apiClient.get(`/api/surveys`)
-      if (response.status === 200) {
-        console.log(response.data)
-        setSurveyList(response.data)
-        dispatch(surveyAction.setSurveys(response.data));
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      dispatch(isLoadingAction.setIsLoading(false))
-
+    const user=localStorage.getItem('user');
+    if(user){
+       const parseUser=JSON.parse(user)
+         setSurvey(parseUser.survey)
     }
-  };
+  }, []);
+ 
 
   return (
     <div>
-      <DashboardCard surveys={serveyList}/>
+      <DashboardCard survey={survey}/>
     </div>
   )
 }

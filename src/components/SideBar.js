@@ -3,12 +3,21 @@ import classes from "./SideBar.module.css";
 import SettingsIcon from '@mui/icons-material/Settings';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import LogoutIcon from '@mui/icons-material/Logout';
-import PersonIcon from '@mui/icons-material/Person';
+import PersonIcon from '@mui/icons-material/PersonAddAlt';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import { useEffect, useState } from "react";
 const SideBar = () => {
 
 
-  const navigate =useNavigate()
+
+  const [user,setUser]=useState({});
+  useEffect(()=>{
+    const user=localStorage.getItem('user');
+    if(user){
+         setUser(JSON.parse(user))
+
+    }
+  },[])
   return (
     <div className="px-3 mx-md-0 ">
       <div className="my-4 fs-5 fw-bold ms-4">Menu</div>
@@ -28,26 +37,12 @@ const SideBar = () => {
         </NavLink>
       </div>
 
-      <div className="mb-3">
-        <NavLink
-          to={"/surveys"}
-          className={({ isActive }) =>
-            isActive
-              ? classes.active + " border rounded px-1 px-xl-4 py-2"
-              : classes.inactive + " px-1 px-xl-4 py-2 "
-          }
-        >
-          <span className="fs-5 me-2">
-            <AddReactionIcon/>
-            {/* <i className="fa-solid fa-layer-group"></i> */}
-          </span>
-          <span className="me-1">Survey</span> 
-        </NavLink>
-      </div>
+      {/* navigate(`/users/${user.id}/responses?surveyId=${user.surveyId}`); */}
+
 
       <div className="mb-3">
         <NavLink
-          to={"/users"}
+          to={`/users/${user?.id}/responses?surveyId=${user?.survey?.id}`}
           className={({ isActive }) =>
             isActive
               ? classes.active + " border rounded px-1 px-xl-4 py-2"
@@ -55,10 +50,10 @@ const SideBar = () => {
           }
         >
           <span className="fs-5 me-2">
-           <PersonIcon/>
+           <PersonIcon />
             {/* <i className="fa-solid fa-users"></i> */}
           </span>
-          <span className="me-1" >Data Collector</span>
+          <span className="me-1" >Responses</span>
         </NavLink>
       </div>
       <div className="mb-3">

@@ -18,10 +18,10 @@ const VerifyOtp = () => {
   const isLoading = useSelector((state) => state.btn.isLoading);
 
   const dispatch = useDispatch();
-  const email = searchParams.get("email");
+  const phoneNo = searchParams.get("phoneNo");
   const otpHandler = (e) => {
     setOtp(e.target.value);
-  };
+  }
   setTimeout(() => setShowAlert(false), 1000);
   const validate = (otp) => {
     var errorOtp = "";
@@ -46,10 +46,10 @@ const VerifyOtp = () => {
       dispatch(buttonAction.setBtnSpiner(true));
 
       try {
-        console.log("params email", email);
-        var response = await apiClient.post("api/users/verify-token", {
+
+        var response = await apiClient.post("api/encoders/verify-token", {
           tokenCode: otp,
-          email: email,
+          phoneNo: phoneNo,
         });
         if (response.status === 200) {
           saveUserData(response.data);
@@ -65,30 +65,22 @@ const VerifyOtp = () => {
   };
   const saveUserData = (data) => {
     localStorage.setItem("token", data.token);
-    localStorage.setItem("user", {
-      email: data.email,
+    localStorage.setItem("user", JSON.stringify({
+      id: data.id,
       name: data.name,
       phoneNumber: data.phoneNo,
-    });
+      survey: data.survey,
+    }));
   };
   return (
     <div
      className={`${classes.wraper} mx-5 px-5  d-flex justify-content-center`}>
       <div className="bg-light border rounded m-5 p-5">
         <Form>
-          {showAlert && (
-            <Alert
-              style={{ position: "absolute", top: 10 }}
-              onClose={() => setShowAlert(false)}
-              variant="filled"
-              severity="success"
-            >
-              {/* ()=>setShowAlert(false) */}
-              <p>Verification Code sent</p>
-            </Alert>
-          )}
+    
 
           <Form.Group className="mb-4" controlId="otp">
+            <p className="text-success">Verification Code sent to {phoneNo}</p>
             <Form.Label className="fw-bold">Enter Otp</Form.Label>
             <Form.Control
               type="text"

@@ -11,40 +11,37 @@ import { buttonAction } from "../../store/slices/ButtonSpinerSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
+  const [phoneNo, setPhoneNo] = useState("");
   const [error, setError] = useState("");
   const isLoading = useSelector((state) => state.btn.isLoading);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const emailHandler = (e) => {
+  const phoneHandler = (e) => {
     console.log("erro", error);
-    setEmail(e.target.value);
+    setPhoneNo(e.target.value);
   };
   const validate = (value) => {
-    const regexExp =
-      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
+
     var errorValues = "";
     if (!value) {
-      errorValues = "Email is Required";
-    } else if (!regexExp.test(value)) {
-      errorValues = "Invalid Email Address";
+      errorValues = "Phone Number is Required";
     }
 
     return errorValues;
   };
-  const forgotHandler = async (e) => {
+  const forgotHandler = async (e) => { 
     e.preventDefault();
-    const err = validate(email);
+    const err = validate(phoneNo);
     setError(err);
     if (!err) {
       dispatch(buttonAction.setBtnSpiner(true));
 
       try {
         var response = await apiClient.post(
-          "api/users/forgot-password",
-          { email },
+          "api/encoders/forgot-password",
+          { phoneNo },
           {
             //   headers:{
             //     'Content-Type':'application/json',
@@ -54,7 +51,7 @@ const ForgotPassword = () => {
           }
         );
         if (response.status === 200) {
-          navigate(`/verify-otp?email=${email}`);
+          navigate(`/verify-otp?phoneNo=${phoneNo}`);
         }
       } catch (error) {
         console.log("Error " + error);
@@ -70,14 +67,13 @@ const ForgotPassword = () => {
       <div className="bg-light border rounded m-5 p-5">
         <Form>
           <Form.Group className="mb-4" controlId="loginemail">
-            <Form.Label className="fw-bold">Email address</Form.Label>
+            <Form.Label className="fw-bold">Phone Number</Form.Label>
             <Form.Control
-              type="email"
-              placeholder="name@example.com"
+              type="text"
               name="email"
-              value={email}
+              value={phoneNo}
               className={error ? classes.errorBorder : ""}
-              onChange={emailHandler}
+              onChange={phoneHandler}
             />
             <span className={classes.errorText}>{error}</span>
           </Form.Group>
@@ -87,7 +83,7 @@ const ForgotPassword = () => {
             variant="none"
             onClick={forgotHandler}
           >
-            Send Email
+            Send OTP
             <span className="ms-2">
               {isLoading && (
                 <Spinner animation="border" variant="light" size="sm" />

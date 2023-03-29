@@ -8,7 +8,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import classes from "./Preview.module.css";
 import { useDispatch, useSelector } from "react-redux";
 import apiClient from "../../url";
-import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
+import {
+  Link,
+  Navigate,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { surveyAction } from "../../store/slices/ServeySlice";
 import { questionAction } from "../../store/slices/QuestionSlice";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -17,12 +23,8 @@ import { isLoadingAction } from "../../store/spinerSlice";
 import { buttonAction } from "../../store/slices/ButtonSpinerSlice";
 import Dexie from "dexie";
 import { useLiveQuery } from "dexie-react-hooks";
-
-const db = new Dexie("myDatabase");
-db.version(1).stores({
-  answers:
-    "++id, questionId,answer,surveyId, multipleAnswer,name,phoneNumber,region,zone,woreda,kebele", // Primary key and indexed props
-});
+import Spiner from "../../Spiner";
+import { userAction } from "../../store/slices/UserSlice";
 
 function Answer() {
   const [checkAnswers, setCheckAnswers] = useState([]);
@@ -37,9 +39,11 @@ function Answer() {
     //   multipleAnswer:[],
     // }
   ]);
+  const isSpinerLoading = useSelector((state) => state.loading.isLoading);
 
-  const answers = useLiveQuery(() => db.answers.toArray());
+  const [searchParams, setSearchParams] = useSearchParams();
 
+  const userId = searchParams.get("userId");
   const userData = useSelector((state) => state.user.farmer);
   const isLoading = useSelector((state) => state.btn.isLoading);
 
@@ -47,52 +51,10 @@ function Answer() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
-
-        if ("serviceWorker" in navigator) {
-        navigator.serviceWorker
-        .register("/sw.js")
-        .then(serviceWorker => {
-          console.log("Service Worker registered: ", serviceWorker);
-        })
-        .catch(error => {
-          console.error("Error registering the Service Worker: ", error);
-        });
-    }
     fetchQuestions();
     fetchSelectedServey();
-
-    const check = async () => {
-      try {
-        const online = await apiClient.get("/api/surveys/ws/echo",
-          { cache: "no-store" }
-        );
-        const status = online.status >= 200 && online.status < 300;
-        if (status && answers?.length > 0) {
-          syncOfflineSavedAnswers();
-        }
-      } catch (err) {
-        return false;
-      }
-      
-    };
-    check();
   }, []);
 
-  window.ononline= (event) => {  
-    console.log('you are now connected')
-    syncOfflineSavedAnswers()
-  }
-
-//   window.addEventListener('online', (event) => {
-//     console.log("You are now connected to the network.");
-//     syncOfflineSavedAnswers()
-
-// });
-
-  const syncOfflineSavedAnswers = async() => {
-    console.log("data to be Synced", answers);
-    await db.answers.clear()
-  };
   const validateErrors = (answers) => {
     const errors = [];
     questions.forEach((question) => {
@@ -107,7 +69,6 @@ function Answer() {
   };
 
   const returnArray = (start, end) => {
-
     const numbers = [];
 
     if (start > end) {
@@ -150,7 +111,7 @@ function Answer() {
                 isSaved: 1,
               };
             })
-            .reverse();
+            // .reverse();
           setQuestions(arrangedQuestions);
           dispatch(questionAction.setQuestions(arrangedQuestions));
         }
@@ -206,7 +167,6 @@ function Answer() {
     const { value, checked } = e.target;
 
     if (checked) {
-
       const index = allResponse.findIndex(
         (resp) => resp.questionId === questId
       );
@@ -247,58 +207,30 @@ function Answer() {
     }
   };
 
-  const checkOnlineStatus = async () => {
-    try {
-      const online = await apiClient(
-        "api/surveys/ws/echo",
-        { cache: "no-store" }
-      );
-      return online.status >= 200 && online.status < 300; // either true or false
-    } catch (err) {
-      return false;
-    }
-  };
-
-  const saveOffline = async () => {
-    const formatted = questionResponses.map((res) => {
-      return {
-        ...res,
-        surveyId,
-        ...userData,
-      };
-    });
-
-    for (let index = 0; index < formatted.length; index++) {
-      const oneData = formatted[index];
-      await db.answers.add(oneData);
-    }
-  
-  };
-
   const submitResponse = async (e) => {
     e.preventDefault();
     const errors = validateErrors(questionResponses);
     setResponseErrors(errors);
 
-    const online = await checkOnlineStatus();
-    console.log("isOnline", online);
-    if (!online) {
-      saveOffline();
-      return;
+    if(Object.values(userData).length == 0){
+      navigate(-1)
     }
-
     if (errors.length === 0) {
       try {
         dispatch(buttonAction.setBtnSpiner(true));
         var response = await apiClient.post("api/responses", {
           userData,
           surveyId: surveyId,
+          encoderId:userId,
           questionResponses,
         });
         if (response.status === 201) {
           // fetchUserData();
           console.log("success", response.data);
-          navigate("/success");
+          // navigate(`/fill-user/${surveyId}`);
+          dispatch(userAction.setFarmer({}));
+
+          navigate(`/users/${userId}/responses/?surveyId=${surveyId}`);
         }
       } catch (err) {
         console.log(err);
@@ -317,164 +249,174 @@ function Answer() {
     console.log("all response ", questionResponses);
   };
 
-  console.log("offline ", answers);
-
   return (
     <div className="d-flex flex-column align-items-center justify-content-center px-sm-0 mx-lg-5 px-lg-5">
+  
       <div className="mx-lg-5 mx-sm-1 px-0">
-      
-        {
-          questions.length == 0? <div className="m-5 p-5 fw-bold"> No Questions Available to This Survey to Respond</div> :(
-        questions.map((question, index) => {
-          return (
-            <div key={index} className="border my-3 p-3 m-3 px-sm-1 rounded d-flex  flex-column justify-content-start align-items-space bg-light  mx-lg-5">
-              <div className="mb-3 mx-lg-5">
-                {question.required
-                  ? index + 1 + "." + " * " + question.text
-                  : index + 1 + ". " + question.text}
-              </div>
-              <div className="mx-lg-5">
-                {question.type === "linear" ? (
-                  <Form.Group className="d-flex justify-content-between mx-0 my-sm-1">
-                    {returnArray(
-                      Number(question.responseChoices[0].text),
-                      Number(question.responseChoices[1].text)
-                    ).map((opt,index) => {
-                      return (
-                        <div key={index}  className="my-2 mx-lg-3 mx-sm-2 mx-md-3 px-sm-2 px-md-2 ">
-                          <Form.Check
-                            className=""
-                            type="radio"
-                            key={opt}
-                            id={"linear" + question.id + opt}
-                            name={question.id}
-                            value={opt}
-                            onClick={(e) =>
-                              handleScaleAnswer(e, question.id, opt)
-                            }
-                            //  disabled
-                            //  checked={question.answer.some((ans)=> ans === opt.title)}
-                          />
-                          <Form.Label htmlFor={"linear" + question.id + opt}>
-                            {opt}
-                          </Form.Label>
-                        </div>
-                      );
-                    })}
-                  </Form.Group>
-                ) : question.type === "short" ? (
-                  <Form.Group>
-                    <Form.Label aria-label={question.text}></Form.Label>
-                    <Form.Control
-                      className={
-                        responseErrors.some((rE) => rE === question.id)
-                          ? classes.errorBorder + " bg-white"
-                          : " bg-white"
-                      }
-                      id={index}
-                      key={index}
-                      // value={question.text}
-                      required={true}
-                      type="text"
-                      as="textarea"
-                      onChange={(event) => handleOneAnswer(event, question.id)}
-                    />
-                  </Form.Group>
-                ) : question.type === "radio" ? (
-                  question.responseChoices.map((opt, index) => {
-                    return (
-                      <Form.Group key={index}>
-                        <div >
-                          <Form.Check
-                            type={question.type}
-                            // key={index}
-                            id={opt.id}
-                            name={question.id}
-                            value={opt.text}
-                            label={opt.text}
-                            onClick={(e) => handleOneAnswer(e, question.id)}
-                          ></Form.Check>
-                        </div>
-                      </Form.Group>
-                    );
-                  })
-                ) : (
-                  question.responseChoices.map((opt, index) => {
-                    return (
-                      <Form.Group key={index}>
-                        <div >
-                          <Form.Check
-                            type={question.type}
-                            // key={index}
-                            id={"op" + question + index}
-                            name={question.id}
-                            label={opt.text}
-                            value={opt.text}
-                            // checked={}
-                            onClick={(e) =>
-                              handleMultipleAnswer(e, question.id)
-                            }
+        {questions.length == 0 ? (
+          <div className="m-5 p-5 fw-bold">
+            {" "}
+            <Spiner />
+            No Questions Available to This Survey to Respond
+          </div>
+        ) : (
+          questions.map((question, index) => {
+            return (
+              <div
+                key={index}
+                className="border my-3 p-3 m-3 px-sm-1 rounded d-flex  flex-column justify-content-start align-items-space bg-light  mx-lg-5"
+              >
+                <div className="mb-3 mx-lg-5">
+                  {question.required
+                    ? index + 1 + "." + " * " + question.text
+                    : index + 1 + ". " + question.text}
+                </div>
+                <div className="mx-lg-5">
+                  {question.type === "linear" ? (
+                    <Form.Group className="d-flex justify-content-between mx-0 my-sm-1">
+                      {returnArray(
+                        Number(question.responseChoices[0].text),
+                        Number(question.responseChoices[1].text)
+                      ).map((opt, index) => {
+                        return (
+                          <div
+                            key={index}
+                            className="my-2 mx-lg-3 mx-sm-2 mx-md-3 px-sm-2 px-md-2 "
                           >
-                            {/* <Form.Label>{opt.text}</Form.Label> */}
-                          </Form.Check>
-                        </div>
-                      </Form.Group>
+                            <Form.Check
+                              className=""
+                              type="radio"
+                              key={opt}
+                              id={"linear" + question.id + opt}
+                              name={question.id}
+                              value={opt}
+                              onClick={(e) =>
+                                handleScaleAnswer(e, question.id, opt)
+                              }
+                              //  disabled
+                              //  checked={question.answer.some((ans)=> ans === opt.title)}
+                            />
+                            <Form.Label htmlFor={"linear" + question.id + opt}>
+                              {opt}
+                            </Form.Label>
+                          </div>
+                        );
+                      })}
+                    </Form.Group>
+                  ) : question.type === "short" ? (
+                    <Form.Group>
+                      <Form.Label aria-label={question.text}></Form.Label>
+                      <Form.Control
+                        className={
+                          responseErrors.some((rE) => rE === question.id)
+                            ? classes.errorBorder + " bg-white"
+                            : " bg-white"
+                        }
+                        id={index}
+                        key={index}
+                        // value={question.text}
+                        required={true}
+                        type="text"
+                        as="textarea"
+                        onChange={(event) =>
+                          handleOneAnswer(event, question.id)
+                        }
+                      />
+                    </Form.Group>
+                  ) : question.type === "radio" ? (
+                    question.responseChoices.map((opt, index) => {
+                      return (
+                        <Form.Group key={index}>
+                          <div>
+                            <Form.Check
+                              type={question.type}
+                              // key={index}
+                              id={opt.id}
+                              name={question.id}
+                              value={opt.text}
+                              label={opt.text}
+                              onClick={(e) => handleOneAnswer(e, question.id)}
+                            ></Form.Check>
+                          </div>
+                        </Form.Group>
+                      );
+                    })
+                  ) : (
+                    question.responseChoices.map((opt, index) => {
+                      return (
+                        <Form.Group key={index}>
+                          <div>
+                            <Form.Check
+                              type={question.type}
+                              // key={index}
+                              id={"op" + question.id + index}
+                              name={question.id}
+                              label={opt.text}
+                              value={opt.text}
+                              // checked={}
+                              onClick={(e) =>
+                                handleMultipleAnswer(e, question.id)
+                              }
+                            >
+                              {/* <Form.Label>{opt.text}</Form.Label> */}
+                            </Form.Check>
+                          </div>
+                        </Form.Group>
 
-                      // <div class="form-check">
-                      //   <input
-                      //   className="form-check-input"
-                      //           type={question.type}
-                      //       key={index}
-                      //       id={'op'+question+index}
+                        // <div class="form-check">
+                        //   <input
+                        //   className="form-check-input"
+                        //           type={question.type}
+                        //       key={index}
+                        //       id={'op'+question+index}
 
-                      //       name={question.id}
-                      //       label={opt.text}
-                      //       value={opt.text}
-                      //     />
-                      //   <label class="form-check-label" for={'op'+question+index}>
-                      //   {opt.text}
-                      //   </label>
-                      // </div>
-                    );
-                  })
-                )}
-                <span className={classes.errorText}>
-                  {responseErrors.some((rE) => rE === question.id)
-                    ? "Required"
-                    : ""}
-                </span>
+                        //       name={question.id}
+                        //       label={opt.text}
+                        //       value={opt.text}
+                        //     />
+                        //   <label class="form-check-label" for={'op'+question+index}>
+                        //   {opt.text}
+                        //   </label>
+                        // </div>
+                      );
+                    })
+                  )}
+                  <span className={classes.errorText}>
+                    {responseErrors.some((rE) => rE === question.id)
+                      ? "Required"
+                      : ""}
+                  </span>
+                </div>
               </div>
+            );
+          })
+        )}
+        {questions.length != 0 && (
+          <div className=" mx-3 ms-lg-5 py-lg-1 px-lg-1 ps-sm-1  my-3 d-flex justify-content-between align-items-center">
+            <div className="d-flex m-sm-1 px-sm-1 ">
+              <Button
+                variant="dark"
+                className=""
+                onClick={() => navigate(-1, { state: userData })}
+              >
+                <ArrowBackIcon />
+                Back
+              </Button>
             </div>
-          );
-        })
-          )
-        }
-        { questions.length != 0 && (
-        <div className=" mx-3 ms-lg-5 py-lg-1 px-lg-1 ps-sm-1  my-3 d-flex justify-content-between ">
-          <div className="d-flex m-sm-1 px-sm-1 py-sm-1 py-lg-0 justify-content-start ">
-            <Button
-              variant="dark"
-              className=""
-              onClick={() => navigate(-1, { state: userData })}
-            >
-              <ArrowBackIcon />
-              Back
-            </Button>
-          </div>
-          <div className="d-flex mx-2 px-lg-3 px-sm-0 me-1">
-            <Button variant="dark" className="py-2" onClick={submitResponse}>
-              Submit
-              {isLoading && (
-                <Spinner animation="border" variant="light" size="sm" />
+            <div className="d-flex align-items-center mx-2  me-1">
+              <Button variant="dark me-5" className="" onClick={submitResponse}>
+                Submit
+                {isLoading && (
+                  <Spinner animation="border" variant="light" size="sm" />
+                )}
+              </Button>
+              {responseErrors.length > 0 && (
+                <Link variant="dark me-5" onClick={clearResponse}>
+                  Clear Response
+                </Link>
               )}
-            </Button>
-            {responseErrors.length > 0 && (
-              <Link variant="dark" onClick={clearResponse}>
-                Clear Response
-              </Link>
-            )}
+            </div>
           </div>
-        </div>
         )}
       </div>
     </div>

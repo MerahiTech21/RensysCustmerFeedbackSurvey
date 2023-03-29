@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import { Button, Container, Form, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { useParams } from "react-router-dom";
 import classes from "./UserRegister.module.css";
 import { userAction } from "../store/slices/UserSlice";
 import { useEffect } from "react";
+import { isLoadingAction } from "../store/spinerSlice";
+import ArrowBack from "@mui/icons-material/ArrowBack";
 
 const UserRegister = (props) => {
   const selectedSurvey = useSelector((state) => state.survey.selectedSurvey);
   const [user, setUser] = useState({
     name: "",
-    phoneNumber: "",
+    phoneNo: "",
     region: "",
     zone: "",
     woreda: "",
@@ -20,7 +22,7 @@ const UserRegister = (props) => {
   });
   const [errors, setErrors] = useState({
     name: "",
-    phoneNumber: "",
+    phoneNo: "",
     region: "",
     zone: "",
     woreda: "",
@@ -31,7 +33,9 @@ const UserRegister = (props) => {
   const params = useParams();
   const location = useLocation();
   const prevData = { ...location.state };
+  const [searchParams, setSearchParams] = useSearchParams();
 
+  const userId = searchParams.get("userId");
   const surveyId = params.surveyId;
   const prev = useSelector((state) => state.user.farmer);
 
@@ -43,9 +47,12 @@ const UserRegister = (props) => {
     setUser((preUser) => {
       return { ...preUser, [name]: value };
     });
-    // setErrors((preErrors) => {
-    //   return { ...preErrors, [name]: '' };
-    // });
+    if(value){
+          setErrors((preErrors) => {
+      return { ...preErrors, [name]: '' };
+    });
+    }
+
   };
 
   const handleUserData = () => {
@@ -54,15 +61,19 @@ const UserRegister = (props) => {
     console.log("err", err);
     setErrors(err);
     if (Object.values(err)?.length === 0) {
+      dispatch(isLoadingAction.setIsLoading(true));
+
       try {
         console.log("try", "yes");
         dispatch(userAction.setFarmer(user));
-        if (props.type === "preview") {
-          navigate(`/surveys/${surveyId}/preview`);
-        } else {
-          navigate(`/fill-answer/${surveyId}`);
-        }
+   
+          navigate(`/fill-answer/${surveyId}?userId=${userId}`);
+        
       } catch (error) {}
+      finally{
+        dispatch(isLoadingAction.setIsLoading(false));
+
+      }
     }
   };
 
@@ -71,8 +82,8 @@ const UserRegister = (props) => {
     if (!data.name?.trim()) {
       error.name = "Name Required";
     }
-    if (!data.phoneNumber?.trim()) {
-      error.phoneNumber = "Phone Number Required";
+    if (!data.phoneNo?.trim()) {
+      error.phoneNo = "Phone Number Required";
     }
     if (!data.region?.trim()) {
       error.region = "Region Required";
@@ -109,13 +120,13 @@ const UserRegister = (props) => {
               <Form.Group className="m-2">
                 <Form.Label>Phone Number</Form.Label>
                 <Form.Control
-                  value={user.phoneNumber}
-                  name="phoneNumber"
+                  value={user.phoneNo}
+                  name="phoneNo"
                   onChange={changeHandler}
-                  className={errors.phoneNumber ? classes.errorBorder : ""}
+                  className={errors.phoneNo ? classes.errorBorder : ""}
                 />
-                <span className={errors.phoneNumber ? classes.errorText : ""}>
-                  {errors?.phoneNumber}
+                <span className={errors.phoneNo ? classes.errorText : ""}>
+                  {errors?.phoneNo}
                 </span>
               </Form.Group>
               <Form.Group className="m-2">
@@ -169,19 +180,30 @@ const UserRegister = (props) => {
             </Form>
           </Col>
         </Row>{" "}
-        <Row className="justify-content-center">
-        <Col  xs={12} lg={6} className="m-2 justify-content-end">
+       
+      </Container>
+      <div className=" d-flex justify-content-center">
+      <div className=" d-flex justify-content-between">
+
             <Button
-              className="px-3"
+              className="px-3 mx-5"
+              variant="dark"
+              onClick={() => {navigate(-1)}}
+            >
+              
+              <ArrowBack /> Back
+            </Button>
+      
+            <Button
+              className="px-3 mx-5"
               variant="dark"
               onClick={() => handleUserData()}
             >
               Next
               <ArrowForwardIcon />
             </Button>
-          </Col>
-        </Row>
-      </Container>
+        </div>
+        </div>
     </div>
   );
 };

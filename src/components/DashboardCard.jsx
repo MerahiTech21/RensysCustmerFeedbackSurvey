@@ -5,30 +5,31 @@ import Nav from "react-bootstrap/Nav";
 import { Col, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import TimeAgo from "./TimeAgo";
+import { useEffect, useState } from "react";
 
 function DashboardCard(props) {
   const navigate = useNavigate();
-  const activeSurveies =props.surveys.filter((sur)=>sur.status !=0 )
-  const closedSurveies =props.surveys.filter((sur)=>sur.status ==0 )
+  const [survey,setSurvey]=useState({});
+
+  useEffect(()=>{
+      setSurvey(props.survey)
+
+  })
   return (
     <div className="m-2">
       <div className=" border rounded bg-white mb-3">
-        <div className="m-2 mx-5">Active Surveys</div>
-        <Row xs={1} md={3} className="g-2">
-          {activeSurveies.length === 0 ? (<div className="mx-5 flex-center" >No Active Survey</div>): (
-            activeSurveies.map((survey,index) => {
-            return (
-              <Col key={index}>
+        <div className="m-2 mx-5"> Survey Detail</div>
+        <Row xs={12} md={12} className="g-2">
+          {!survey ? (<div className="mx-5 flex-center" >No Active Survey Assigned To You</div>): (
+              <Col >
                 <Card className="m-3 p-3 bg-light">
                   {/* <Card.Header>{survey.name}</Card.Header> */}
 
                   <Card.Body>
                     <Card.Title>{survey.name+' Survey'}</Card.Title>
                     {/* <Card.Text>{survey.description.substring(0,100)} </Card.Text> */}
-                    <Card.Text>Total Questions 16 </Card.Text>
-                    <Card.Text>Total Response 16 </Card.Text>
-                    <Card.Text>Total Respondent 16 </Card.Text>
-                    <Button onClick={()=>navigate(`/surveys/${survey.id}/questions`)} variant="warning">Detail</Button>
+                    <Card.Text>{survey.description} </Card.Text>
+         
                   </Card.Body>
                   <Card.Footer>
                     <small className="text-muted">
@@ -37,39 +38,13 @@ function DashboardCard(props) {
                   </Card.Footer>
                 </Card>
               </Col>
-            );
             
-          })
           )
       }
           
         </Row>
       </div>
-      <div className=" border rounded bg-white">
-        <div className="m-2 mx-5">Closed Surveys</div>
-        <Row xs={1} md={3} className="g-2">
-          {closedSurveies.slice(0,3).map((survey,index) => {
-            return (
-              <Col key={index}>
-                <Card className="m-3 p-3 bg-light">
-                  <Card.Header>{survey.name}</Card.Header>
-
-                  <Card.Body>
-                    <Card.Title>{survey.name}</Card.Title>
-                    <Card.Text>{survey.description.substring(0,100)} </Card.Text>
-                    <Button onClick={()=>navigate('/surveys')} variant="warning">Detail</Button>
-                  </Card.Body>
-                  <Card.Footer>
-                    <small className="text-muted">
-                    <TimeAgo timestamp={survey.updatedAt} />
-                    </small>
-                  </Card.Footer>
-                </Card>
-              </Col>
-            );
-          })}
-        </Row>
-      </div>
+      
     
     </div>
   );

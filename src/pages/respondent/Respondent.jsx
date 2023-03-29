@@ -1,9 +1,10 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-function Survey() {
+
+const Respondent = () => {
   return (
     <Outlet/>
   )
 }
 
-export default Survey 
+export default Respondent

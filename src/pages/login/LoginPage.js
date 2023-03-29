@@ -13,9 +13,9 @@ import { useLocation } from "react-router-dom";
 
 const LoginPage = () => {
   const isLoading = useSelector((state) => state.btn.isLoading);
-  const [cridentials, setCridentials] = useState({ email: "", password: "" });
+  const [cridentials, setCridentials] = useState({ phoneNo: "", password: "" });
   const [errors, setErrors] = useState({
-    email: "",
+    phoneNo: "",
     password: "",
     errNotify: "",
   });
@@ -46,13 +46,10 @@ const LoginPage = () => {
   };
 
   const validate = (values) => {
-    const regexExp =
-      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
+
     const errorValues = {};
-    if (!values.email.trim()) {
-      errorValues.email = "email is required";
-    } else if (!regexExp.test(values.email)) {
-      errorValues.email = "invalid email address";
+    if (!values.phoneNo.trim()) {
+      errorValues.phoneNo = "phoneNo is required";
     }
     if (!values.password) {
       errorValues.password = "password is required";
@@ -75,9 +72,10 @@ const LoginPage = () => {
     // apiClient.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
     localStorage.setItem("token", data.token);
     localStorage.setItem("user",JSON.stringify({
+      id: data.id,
       name: data.name,
-      email: data.email,
-      phoneNumber: data.phoneNo,
+      phoneNo: data.phoneNo,
+      survey: data.survey,
     }));
     dispatch(userAction.setToken(data.token));
     dispatch(userAction.setIsAuthenticated(true));
@@ -85,12 +83,12 @@ const LoginPage = () => {
 
   const loginHandler = async () => {
     setErrors(validate(cridentials));
-    if (!errors.email && !errors.password) {
+    if (!errors.phoneNo && !errors.password) {
       dispatch(buttonAction.setBtnSpiner(true));
       var response;
       try {
         // var response = await axios.post("https://hotroom.merahitechnologies.com/admin/auth/login", cridentials);
-        var response = await apiClient.post("api/users/login", cridentials);
+        var response = await apiClient.post("api/encoders/login", cridentials);
         if (response.status === 200) {
           saveUserData(response.data);
           // fetchUserData();
@@ -119,14 +117,14 @@ const LoginPage = () => {
         </div>
         <Form>
           <Form.Group className="mb-4" controlId="exampleForm.ControlInput1">
-            <Form.Label className="fw-bold">Email address</Form.Label>
+            <Form.Label className="fw-bold">Phone Number </Form.Label>
             <Form.Control
-              type="email"
-              name="email"
-              className={errors.email ? classes.errorBorder : ""}
+              type="phone"
+              name="phoneNo"
+              className={errors.phoneNo ? classes.errorBorder : ""}
               onChange={changeHandler}
             />
-            <span className={classes.errorText}>{errors.email}</span>
+            <span className={classes.errorText}>{errors.phoneNo}</span>
           </Form.Group>
           <Form.Group className="mb-4" controlId="exampleForm.ControlTextarea1">
             <Form.Label className="fw-bold">Password</Form.Label>

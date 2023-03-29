@@ -2,10 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const encoderSlice = createSlice({
   name: "encoder",
-  initialState: { encoders: [] },
+  initialState: { encoders: [],responses:[] },
   reducers: {
     setEncoders: (state, action) => {
       state.encoders = action.payload;
+    },
+    setResponses: (state, action) => {
+      state.responses = action.payload;
     },
     addEncoder: (state, action) => {
       state.encoders.push(action.payload);

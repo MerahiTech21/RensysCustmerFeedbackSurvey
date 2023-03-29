@@ -10,6 +10,7 @@ import apiClient from "../../url";
 import { responseAction } from "../../store/slices/QuestionResponseSlice";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { isLoadingAction } from "../../store/spinerSlice";
+import { encoderAction } from "../../store/slices/EncoderSlice";
 
 export default function RespondentList() {
   const navigate = useNavigate();
@@ -27,11 +28,11 @@ export default function RespondentList() {
     try {
       dispatch(isLoadingAction.setIsLoading(true));
       const response = await apiClient.get(
-        `/api/responses/individual/${surveyId}`
+        `/api/encoders/${userId}/responses`
       );
       if (response.status === 200) {
         setQuestionResponses(response.data);
-        dispatch(responseAction.setIndividualResponses(response.data));
+        dispatch(encoderAction.setResponses(response.data));
       }
     } catch (error) {
       console.log(error);
@@ -47,7 +48,7 @@ export default function RespondentList() {
           <p className="fs-5 fw-bold"> Respondent List</p>
         </div>
       </div>
-      <div className="">
+      <div className="d-flex justify-content-between">
         <Button
           variant="none"
           className="me-2 flex-start"
@@ -55,14 +56,17 @@ export default function RespondentList() {
         >
           <ArrowBackIcon color="dark" fontSize="large" />
         </Button>
+        <div className="me-2">
+          <button className="btn btn-warning text-white" onClick={()=>{ navigate(`/fill-user/${surveyId}?userId=${userId}`)}}>Add New Response</button>
+        </div>
       </div>
       {questionResponses.length === 0 ? (
         <div style={{ float: "right" }} className="w-25 align-self-end">
           No Respondent
         </div>
       ) : (
-        <div className="mt-1 bg-light mx-2 px-4">
-          <Table responsive="md">
+        <div className="mt-1 bg-light mx-2 px-4 border">
+          <Table responsive="md ">
             <thead className={classes.header}>
               <tr className="mt-0">
                 <th>NO</th>

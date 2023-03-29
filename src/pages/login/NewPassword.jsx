@@ -16,7 +16,7 @@ const NewPassword = () => {
   const isLoading = useSelector((state) => state.btn.isLoading);
 
   const dispatch = useDispatch();
-  const email = searchParams.get("email");
+  const phoneNo = searchParams.get("phoneNo");
   const passwordHandler = (e) => {
     setPassword(e.target.value);
   };
@@ -27,12 +27,12 @@ const NewPassword = () => {
       dispatch(buttonAction.setBtnSpiner(true));
 
       try {
-        console.log("params email", email);
-        var response = await apiClient.post("api/users/reset-forgot-password", {
+
+        var response = await apiClient.post("api/encoders/reset-forgot-password", {
           newPassword: password,
         });
         if (response.status === 200) {
-          navigate("/dashboard");
+          navigate("/");
         }
       } catch (error) {
         console.log("Error " + error);

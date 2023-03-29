@@ -1,15 +1,15 @@
 import axios from "axios";
 let apiClient = axios.create({
   // baseURL: "http://survey.merahitechnologies.com/",
-  baseURL: "http://192.168.0.9:5000/",
-
+  baseURL: "https://surveyapi.rensysengineering.com/",
+  // baseURL: "http://192.168.0.3:5000/",
   // headers: {
 
   //     Accept: 'application/json',
   //    'Content-Type': 'application/json',
   //    Authorization: `Bearer ${localStorage.getItem('token')}`,
-  //     }
-});
+  //     } 
+}); 
 
 apiClient.interceptors.request.use(
   function (config) {

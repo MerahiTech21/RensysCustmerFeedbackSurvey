@@ -14,7 +14,7 @@ function Header() {
     }
   },[])
   return (
-    <div className="headerNav d-flex justify-content-between ">
+    <div className="headerNav d-flex justify-content-between py-2 ">
       <div className="d-flex mx-5 align-items-end">
         {/* <div className="bg-white"> */}
           <Avatar className="bg-white mx-3" alt="Logo" src="/rensyslogo.png" />
@@ -25,9 +25,13 @@ function Header() {
           <span className="headerLogoName2"> ENGINEERING</span>
         </h5>
       </div>
-      <div className="d-flex align-items-end mx-5 ">
+      <div className="d-flex align-items-center justify-content-start mx-5 py-1">
         <Avatar className="mx-3" />
-        <h6 className="text-white pb-2">{user?.name}</h6>
+        <div className="mt-2">
+         <h6 className="text-white mb-0">{user?.name}</h6>
+         <p className="text-white small mt-0" >Data Collector</p>  
+        </div>
+       
       </div>
     </div>
   );
